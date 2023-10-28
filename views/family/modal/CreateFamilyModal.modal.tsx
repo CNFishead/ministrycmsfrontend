@@ -2,30 +2,17 @@ import React, { useEffect } from "react";
 import styles from "./CreateFamilyModal.module.scss";
 import { Button, Form, Input, Modal, Tooltip } from "antd";
 import { FaQuestionCircle } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import createFamilyAction from "@/redux/actions/family/createFamily.action";
 import { BiUserPlus } from "react-icons/bi";
-import { Dispatch } from "redux";
 
 interface CreateFamilyModalProps {
   open: boolean;
-  dispatch: Dispatch;
   onClose: () => void;
 }
 
 const CreateFamilyModal = (props: CreateFamilyModalProps) => {
   const [form] = Form.useForm();
-
-  const {
-    familyCreate: { loading: createLoading, success: createSuccess, error: createError },
-  } = useSelector((state: RootState) => state.family);
-
   const onFinish = (values: any) => {
-    props.dispatch(createFamilyAction(values) as any);
-    if (createSuccess) {
-      props.onClose();
-    }
+    // props.dispatch(createFamilyAction(values) as any);
   };
 
   return (
@@ -44,7 +31,7 @@ const CreateFamilyModal = (props: CreateFamilyModalProps) => {
                 form.submit();
               }}
               className={styles.button}
-              loading={createLoading}
+              // loading={createLoading}
             >
               Create Family
             </Button>

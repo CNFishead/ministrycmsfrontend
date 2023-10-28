@@ -8,21 +8,51 @@ import { FaSave } from "react-icons/fa";
 import Ministry from "@/types/Ministry";
 import User from "@/types/User";
 import useFetchData from "@/state/useFetchData";
+import { useSelectedProfile } from "@/state/profile/profile";
+import { Row } from "antd/lib";
+import MemberType from "@/types/MemberType";
+import usePostData from "@/state/usePostData";
 
 interface Props {
   open: boolean;
+  setOpen: (open: boolean) => void;
 }
-const CreateNewMinistry = ({ open }: Props) => {
+const CreateNewMinistry = ({ open, setOpen }: Props) => {
   const [form] = Form.useForm();
   const selectableOptions = selectableMinistryTypes();
+  const { data: selectedProfile } = useSelectedProfile();
+  const { data: membersListData, isLoading: loading } = useFetchData({
+    url: `/member/${selectedProfile?.ministry?._id}`,
+    key: "members",
+    enabled: !!selectedProfile?.ministry?._id,
+  });
+  const { mutate: createNewMinistry } = usePostData({
+    url: `/ministry/${selectedProfile?.ministry?._id}`,
+    key: "ministryCreate",
+    successMessage: "Ministry created successfully",
+    queriesToInvalidate: ["ministryList"],
+  });
   const onFinish = (values: any) => {
-    console.log(values);
+    createNewMinistry(values);
+    form.resetFields();
+    setOpen(false);
   };
 
-  const { data: userData } = useFetchData({ url: "/users", key: "users" });
-
   return (
-    <Modal className={styles.container} open={open} closeIcon={true}>
+    <Modal
+      className={styles.container}
+      open={open}
+      closeIcon={true}
+      onCancel={() => {
+        form.resetFields();
+        setOpen(false);
+      }}
+      footer={[
+        <Button key="submit" type="primary" icon={<FaSave />} onClick={() => form.submit()}>
+          Save
+        </Button>,
+      ]}
+    >
       <Card title="Create New Ministry" className={styles.container}>
         {form.getFieldsValue().leader && (
           <div className={styles.leaderInformation}>
@@ -71,14 +101,18 @@ const CreateNewMinistry = ({ open }: Props) => {
           </Form.Item>
           <Form.Item name="leader" className={styles.inputParent} label="Ministry Leader">
             <Select
-              onChange={() => console.log("changed")}
+              // onChange={() => console.log("changed")}
               onSearch={() => console.log("searched")}
               showSearch
               placeholder="Select Ministry Leader"
               className={styles.input}
               defaultValue={form.getFieldsValue().leader}
-              options={userData?.users?.map((user: User) => ({
-                label: `${user.firstName} ${user.lastName}`,
+              options={membersListData?.members?.map((user: MemberType) => ({
+                label: (
+                  <Row>
+                    {user?.fullName} - {user?.email} - {user?.role}
+                  </Row>
+                ),
                 value: user._id,
               }))}
             ></Select>

@@ -89,5 +89,5 @@ export const useUserDetails = (id: string) => {
 
 export const logout = () => {
   localStorage.removeItem("token");
-  window.location.href = `https://auth.truthcasting.com?logout=true`;
+  window.location.href = `https://auth.shepherdcms.org?logout=true`;
 };

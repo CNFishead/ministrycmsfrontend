@@ -21,15 +21,13 @@ export const navigation = (options?: any) => {
           link: "/",
           icon: <RiHome2Fill />,
         },
+        notifications: {
+          title: "Notifications",
+          link: "/notifications",
+          icon: <FaRegBell />,
+        },
       },
       hidden: options?.user ? false : true,
-      // subLinks: {
-      //   analytics: {
-      //     title: 'Analytics',
-      //     link: '/home/analytics',
-      //     icon: <IoAnalyticsSharp />,
-      //   },
-      // },
     },
     ministries: {
       title: "Ministry Details",
@@ -71,7 +69,7 @@ export const navigation = (options?: any) => {
           title: "Families",
           link: "/families",
           icon: <BsFillPeopleFill />,
-        }
+        },
       },
       hidden: options?.user ? false : true,
     },

@@ -14,7 +14,7 @@ const UserItem = (props: Props) => {
     <div className={styles.container}>
       <div className={styles.userInfo}>
         <div className={styles.userImageContainer}>
-          <Avatar src={props.user?.profileImageUrl} alt="user-profile-image" size={64} />
+          <Avatar src={props.user?.profileImageUrl} alt="user-profile-image" size={props.sm ? 48 : 64} />
         </div>
         <div className={styles.userDetailsContainer}>
           <div className={styles.header}>
@@ -23,7 +23,7 @@ const UserItem = (props: Props) => {
             </div>
           </div>
         </div>
-        {props.sm && (
+        {!props.sm && (
           <div className={styles.miscInfoContainer}>
             <div className={styles.miscInfo}>
               <p>

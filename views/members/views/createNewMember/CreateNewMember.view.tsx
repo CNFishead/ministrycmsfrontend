@@ -1,21 +1,10 @@
 import React, { useEffect } from "react";
 import styles from "./CreateNewMember.module.scss";
-import { Button, Card, Col, DatePicker, Divider, Form, Input, InputNumber, Radio, Row, Select, Tooltip } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import createMember from "@/redux/actions/member/createMember";
+import { Button, Col, DatePicker, Divider, Form, Input, InputNumber, Radio, Row, Select, Tooltip } from "antd";
 import PhotoUpload from "@/components/photoUpload/PhotoUpload.component";
 import { states } from "@/data/states";
 import { countries } from "@/data/countries";
-import Link from "next/link";
-import CreateFamilyModal from "@/views/family/modal/CreateFamilyModal.modal";
-import FamilyType from "@/types/FamilyType";
-import getFamiliesAction from "@/redux/actions/family/getFamilies.action";
 import { useRouter } from "next/router";
-import { CREATE_MEMBER_RESET, GET_MEMBER_RESET } from "@/redux/constants/memberConstants";
-import getMember from "@/redux/actions/member/getMember";
-import updateMember from "@/redux/actions/member/updateMember";
-import moment from "moment";
 
 const CreateNewMember = () => {
   const [form] = Form.useForm();
@@ -24,28 +13,16 @@ const CreateNewMember = () => {
 
   const [timer, setTimer] = React.useState<any>(null); // timer for the search bar
   const [createFamilyModal, setCreateFamilyModal] = React.useState<boolean>(false);
-  const dispatch = useDispatch();
-  const {
-    selectedMinistry: { ministry },
-    mainMinistry: { ministry: mainMinistry },
-  } = useSelector((state: RootState) => state.ministry);
-  const {
-    createMember: { success: createSuccess },
-    memberDetails: { member },
-    memberUpdate: { success: updateSuccess },
-  } = useSelector((state: RootState) => state.member);
-  const {
-    listFamilies: { families, loading },
-  } = useSelector((state: RootState) => state.family);
+
   const onFinish = (values: any) => {
     if (id) {
       // if the id exists, then we are updating the member
-      dispatch(updateMember(id as string, { member: form.getFieldsValue() }) as any);
+      // dispatch(updateMember(id as string, { member: form.getFieldsValue() }) as any);
       return;
     }
     // ministry, if their isnt a selectedMinistry, then use the mainMinistry
-    const ministryId = ministry ? ministry._id : mainMinistry._id;
-    dispatch(createMember({ ...values, ministry: ministryId }) as any);
+    // const ministryId = ministry ? ministry._id : mainMinistry._id;
+    // dispatch(createMember({ ...values, ministry: ministryId }) as any);
   };
 
   const onSearch = (val: string) => {
@@ -54,36 +31,25 @@ const CreateNewMember = () => {
     clearTimeout(timer);
     setTimer(
       setTimeout(() => {
-        dispatch(getFamiliesAction({ keyword: val }) as any);
+        // dispatch(getFamiliesAction({ keyword: val }) as any);
       }, 1000) as any // wait 1000ms before searching
     );
   };
 
-  React.useEffect(() => {
-    if (createSuccess) {
-      dispatch({ type: CREATE_MEMBER_RESET });
-      router.push("/members");
-    }
-    if (id) {
-      // dispatch action to get the member details
-      dispatch(getMember(id as string) as any);
-    }
-  }, [createSuccess, updateSuccess]);
-
-  useEffect(() => {
-    if (member) {
-      form.setFieldsValue({ ...member, birthday: moment(member.birthday) });
-    }
-  }, [member]);
+  // useEffect(() => {
+  //   if (member) {
+  //     form.setFieldsValue({ ...member, birthday: moment(member.birthday) });
+  //   }
+  // }, [member]);
 
   useEffect(() => {
     return () => {
-      dispatch({ type: GET_MEMBER_RESET });
+      // TODO: clear the query cache
     };
   }, []);
   return (
     <div className={styles.container}>
-      <CreateFamilyModal dispatch={dispatch} open={createFamilyModal} onClose={() => setCreateFamilyModal(false)} />
+      {/* <CreateFamilyModal dispatch={dispatch} open={createFamilyModal} onClose={() => setCreateFamilyModal(false)} /> */}
       <Form
         form={form}
         layout="vertical"
@@ -135,13 +101,13 @@ const CreateNewMember = () => {
                 onSearch={onSearch}
                 // filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 className={styles.input}
-                loading={loading}
+                // loading={loading}
               >
-                {families?.map((family: FamilyType) => (
+                {/* {families?.map((family: FamilyType) => (
                   <Select.Option key={family._id} value={family._id}>
                     {family.name}
                   </Select.Option>
-                ))}
+                ))} */}
               </Select>
             </Form.Item>
           </Col>
