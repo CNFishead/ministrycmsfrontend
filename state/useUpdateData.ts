@@ -17,16 +17,10 @@ const updateFormData = async (url: string, formData: any) => {
 /**
  * @description react-query hook to update a Certificate
  */
-export default (options: {
-  url: string;
-  key: string;
-  queriesToInvalidate?: string[];
-  successMessage?: string;
-  redirectUrl?: string;
-}) => {
+export default (options: { queriesToInvalidate?: string[]; successMessage?: string; redirectUrl?: string }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  return useMutation((data: any) => updateFormData(options.url, data), {
+  return useMutation((data: { url: string; formData?: any }) => updateFormData(data.url, data.formData), {
     onSuccess: (data: any) => {
       console.log(options.queriesToInvalidate);
       message.success(options.successMessage || "Data updated successfully");

@@ -36,23 +36,19 @@ const MinistryDetails = () => {
   });
 
   const { mutate: createNewMinistry } = usePostData({
-    url: `/ministry/${selectedProfile?.ministry?._id}`,
-    key: "ministryCreate",
     successMessage: "Ministry created successfully",
     queriesToInvalidate: ["ministryList", "ministry", "membersList"],
   });
   const { mutate: updateMinistry } = useUpdateData({
-    url: `/ministry/${id}`,
-    key: "ministryUpdate",
     successMessage: "Ministry updated successfully",
     queriesToInvalidate: ["ministryList", "ministry", "membersList"],
   });
   const onFinish = (values: any) => {
     if (id) {
-      updateMinistry({ ...values, _id: id });
+      updateMinistry({ url: `/ministry/${id}`, formData: { ...values, _id: id } });
       return;
     }
-    createNewMinistry(values);
+    createNewMinistry({ url: `/ministry/${selectedProfile?.ministry?._id}`, formData: values });
     form.resetFields();
   };
 

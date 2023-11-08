@@ -1,10 +1,18 @@
 import React, { useEffect } from "react";
 import styles from "./CreateNewMember.module.scss";
+import formStyles from "@/styles/Form.module.scss";
 import { Button, Col, DatePicker, Divider, Form, Input, InputNumber, Radio, Row, Select, Tooltip } from "antd";
 import PhotoUpload from "@/components/photoUpload/PhotoUpload.component";
 import { states } from "@/data/states";
 import { countries } from "@/data/countries";
 import { useRouter } from "next/router";
+import useFetchData from "@/state/useFetchData";
+import useUpdateData from "@/state/useUpdateData";
+import usePostData from "@/state/usePostData";
+import { useSelectedProfile } from "@/state/profile/profile";
+import moment from "moment";
+import FamilyType from "@/types/FamilyType";
+import MinistryType from "@/types/Ministry";
 
 const CreateNewMember = () => {
   const [form] = Form.useForm();
@@ -14,15 +22,42 @@ const CreateNewMember = () => {
   const [timer, setTimer] = React.useState<any>(null); // timer for the search bar
   const [createFamilyModal, setCreateFamilyModal] = React.useState<boolean>(false);
 
+  const { data: ministryData, isLoading: loadingMinistry } = useSelectedProfile();
+
+  const { data: memberInformation, isLoading: loading } = useFetchData({
+    url: `/member/details/${id}`,
+    key: "memberInformation",
+    enabled: !!id,
+  });
+  const { data: familiesList, isLoading: familiesLoading } = useFetchData({
+    url: `/family`,
+    key: "familyList",
+  });
+  const { data: ministriesList, isLoading: ministriesLoading } = useFetchData({
+    url: `/ministry/${ministryData?.ministry?._id}/subministries`,
+    key: "ministryList",
+    enabled: !!ministryData?.ministry?._id,
+  });
+
+  const { mutate: updateMember } = useUpdateData({
+    successMessage: "Member updated successfully",
+    queriesToInvalidate: ["memberInformation"],
+  });
+
+  const { mutate: createMember } = usePostData({
+    successMessage: "Member created successfully",
+    queriesToInvalidate: ["memberInformation"],
+  });
+
   const onFinish = (values: any) => {
     if (id) {
       // if the id exists, then we are updating the member
-      // dispatch(updateMember(id as string, { member: form.getFieldsValue() }) as any);
+      updateMember({ url: `/member/${id}/update`, formData: { member: { ...values, _id: id } } });
       return;
     }
     // ministry, if their isnt a selectedMinistry, then use the mainMinistry
     // const ministryId = ministry ? ministry._id : mainMinistry._id;
-    // dispatch(createMember({ ...values, ministry: ministryId }) as any);
+    createMember({ url: `/member`, formData: { ...values } });
   };
 
   const onSearch = (val: string) => {
@@ -36,11 +71,11 @@ const CreateNewMember = () => {
     );
   };
 
-  // useEffect(() => {
-  //   if (member) {
-  //     form.setFieldsValue({ ...member, birthday: moment(member.birthday) });
-  //   }
-  // }, [member]);
+  useEffect(() => {
+    if (memberInformation) {
+      form.setFieldsValue({ ...memberInformation?.data, birthday: moment(memberInformation?.data?.birthday) });
+    }
+  }, [memberInformation]);
 
   useEffect(() => {
     return () => {
@@ -53,7 +88,7 @@ const CreateNewMember = () => {
       <Form
         form={form}
         layout="vertical"
-        className={styles.contentContainer}
+        className={formStyles.form}
         onFinish={() => onFinish(form.getFieldsValue())}
         initialValues={{
           // set the default values for the form
@@ -90,9 +125,9 @@ const CreateNewMember = () => {
           </Col>
         </Row>
         {/* family information */}
-        <Row gutter={16}>
-          <Divider orientation="center">Family Information</Divider>
-          <Col span={24}>
+        <Row gutter={16} className={formStyles.editContainer}>
+          <Col span={12}>
+            <Divider orientation="center">Family Information</Divider>
             <Form.Item name="family" className={styles.inputParent}>
               <Select
                 showSearch
@@ -100,73 +135,89 @@ const CreateNewMember = () => {
                 optionFilterProp="children"
                 onSearch={onSearch}
                 // filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                className={styles.input}
-                // loading={loading}
+                className={formStyles.input}
+                loading={familiesLoading}
               >
-                {/* {families?.map((family: FamilyType) => (
+                {familiesList?.families?.map((family: FamilyType) => (
                   <Select.Option key={family._id} value={family._id}>
                     {family.name}
                   </Select.Option>
-                ))} */}
+                ))}
               </Select>
             </Form.Item>
+            <Col span={24} className={styles.mutedText}>
+              Associates this member with a family, This is an optional step, but is recommended for better
+              organization. if the member is a child, its required for them to be associated with a family, with at
+              least one adult. If the family does not exist, you can create one by clicking{" "}
+              <span onClick={() => setCreateFamilyModal(true)} className={styles.spanLink}>
+                here
+              </span>
+            </Col>
           </Col>
-          <Col span={24} className={styles.mutedText}>
-            Associates this member with a family, This is an optional step, but is recommended for better organization.
-            if the member is a child, its required for them to be associated with a family, with at least one adult. If
-            the family does not exist, you can create one by clicking{" "}
-            <span onClick={() => setCreateFamilyModal(true)} className={styles.spanLink}>
-              here
-            </span>
+          <Col span={12}>
+            <Divider orientation="center">Ministry Information</Divider>
+            <Form.Item name="ministry" className={styles.inputParent}>
+              <Select
+                showSearch
+                placeholder="Select a ministry"
+                optionFilterProp="children"
+                onSearch={onSearch}
+                // filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                className={styles.input}
+                loading={ministriesLoading}
+              >
+                {ministriesList?.ministries?.map((ministry: MinistryType) => (
+                  <Select.Option key={ministry._id} value={ministry._id}>
+                    {ministry.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Col span={24} className={styles.mutedText}>
+              Associate this member with a ministry, This is an optional step, but is recommended for better
+              organization.
+            </Col>
           </Col>
         </Row>
-        <Row className={styles.nameContainer} justify="space-evenly">
-          <Col span={24}>
-            <Divider orientation="center">Member Information</Divider>
-          </Col>
+        <div className={formStyles.editContainer}>
+          <Divider orientation="center">Member Information</Divider>
           {/* firstName and lastName should be on the same line */}
-          <Col span={8} lg={6} className={styles.inputParent}>
+          <div className={formStyles.group}>
             <Form.Item
               name="firstName"
               rules={[{ required: true, message: "Please enter a first name" }]}
               label="First Name"
             >
-              <Input type="text" placeholder="First Name" className={`${styles.input} ${styles.addon}`} />
+              <Input type="text" placeholder="First Name" className={`${formStyles.input} ${styles.addon}`} />
             </Form.Item>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
+
             <Form.Item name="lastName" label="Last Name">
-              <Input type="text" placeholder="Last Name" className={styles.input} />
+              <Input type="text" placeholder="Last Name" className={formStyles.input} />
             </Form.Item>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
             <Form.Item label="Birthday" name="birthday">
               <DatePicker
                 placeholder="Birthday"
-                className={styles.input}
+                className={formStyles.input}
                 name="birthday"
                 // allow the user to type in the date
                 format={"MM/DD/YYYY"}
               />
             </Form.Item>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
+
             <Form.Item name="email" label="Email Address">
-              <Input type="text" placeholder="example@test.com" className={styles.input} />
+              <Input type="text" placeholder="example@test.com" className={formStyles.input} />
             </Form.Item>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
+
             <Form.Item name="sex" label="Sex">
-              <Select placeholder="Sex/Gender" className={styles.input}>
+              <Select placeholder="Sex/Gender" className={formStyles.input}>
                 <Select.Option value="male">Male</Select.Option>
                 <Select.Option value="female">Female</Select.Option>
               </Select>
             </Form.Item>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
+
             <Form.Item name="phoneNumber" label="Phone Number">
               <InputNumber
-                className={styles.input}
+                className={formStyles.input}
                 controls={false}
                 formatter={(value: any) => {
                   const phoneNumber = value.replace(/[^\d]/g, "");
@@ -182,18 +233,16 @@ const CreateNewMember = () => {
                 placeholder="Enter Phone Number"
               />
             </Form.Item>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
+          </div>
+          <div className={formStyles.group}>
             <Form.Item name="maritalStatus" label="Marital Status">
-              <Select placeholder="Marital Status" className={styles.input}>
+              <Select placeholder="Marital Status" className={formStyles.input}>
                 <Select.Option value="single">Single</Select.Option>
                 <Select.Option value="married">Married</Select.Option>
                 <Select.Option value="divorced">Divorced</Select.Option>
                 <Select.Option value="widowed">Widowed</Select.Option>
               </Select>
             </Form.Item>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
             <Tooltip
               title="Tags are used to help you organize your members. You can use tags to filter members in the members page. You can also use tags to help denote special information about a member. For example, you can create a tag called 'Baptized' and add it to all members who have been baptized. Then you can filter members by the 'Baptized' tag to see all members who have been baptized."
               placement="topLeft"
@@ -202,7 +251,7 @@ const CreateNewMember = () => {
                 <Select
                   mode="tags"
                   placeholder="Tags"
-                  className={styles.input}
+                  className={formStyles.input}
                   tokenSeparators={[","]}
                   filterOption={(input: string, option: any) =>
                     (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
@@ -210,29 +259,21 @@ const CreateNewMember = () => {
                 />
               </Form.Item>
             </Tooltip>
-          </Col>
-        </Row>
-        <Row className={styles.nameContainer}>
+          </div>
+        </div>
+        <div className={formStyles.editContainer}>
           {/* address information */}
-          <Col span={24}>
-            <Divider orientation="center">Address Information</Divider>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
+          <Divider orientation="center">Address Information</Divider>
+          <div className={formStyles.group}>
             <Form.Item name={["location", "address"]} label="Address">
               <Input type="text" placeholder="Address" className={styles.input} />
             </Form.Item>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
             <Form.Item name={["location", "address2"]} label="Address Cont.">
               <Input type="text" placeholder="Address Continued" className={styles.input} />
             </Form.Item>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
             <Form.Item name={["location", "city"]} label="City">
               <Input type="text" placeholder="City" className={styles.input} />
             </Form.Item>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
             <Form.Item name={["location", "state"]} label="State">
               <Select
                 placeholder="State"
@@ -246,13 +287,9 @@ const CreateNewMember = () => {
                 optionFilterProp="children"
               ></Select>
             </Form.Item>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
             <Form.Item name={["location", "zipCode"]} label="Zip Code">
               <Input type="text" placeholder="Zip Code" className={styles.input} />
             </Form.Item>
-          </Col>
-          <Col span={8} lg={6} className={styles.inputParent}>
             <Form.Item name={["location", "country"]} label="Country">
               <Select
                 placeholder="Country"
@@ -264,14 +301,12 @@ const CreateNewMember = () => {
                 allowClear={true}
               ></Select>
             </Form.Item>
-          </Col>
-        </Row>
-        <Row className={styles.nameContainer}>
+          </div>
+        </div>
+        <div className={formStyles.editContainer}>
           {/* membership information */}
-          <Col span={24}>
-            <Divider orientation="center">Membership Information</Divider>
-          </Col>
-          <Col span={12} className={styles.inputParent}>
+          <Divider orientation="center">Membership Information</Divider>
+          <div className={formStyles.group}>
             <Form.Item name="role" label="Role in The Church">
               <Select placeholder="Role" className={styles.input}>
                 <Select.Option value="member">Member</Select.Option>
@@ -280,23 +315,25 @@ const CreateNewMember = () => {
                 <Select.Option value="admin">Admin</Select.Option>
               </Select>
             </Form.Item>
-          </Col>
-          <Col span={12} className={styles.inputParent}>
-            <Form.Item name="isActive" className={styles.radioContainer} label="Active Member">
-              <Radio.Group className={styles.radioGroup}>
-                <Radio value={true}>Active</Radio>
-                <Radio value={false}>Inactive</Radio>
-              </Radio.Group>
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row className={styles.buttonContainer} justify={"center"}>
-          {/* <Col span={24}> */}
-          <Button type="primary" htmlType="submit" className={styles.button}>
+            <div>
+              <Form.Item name="isActive" className={styles.radioContainer} label="Active Member">
+                <Radio.Group className={styles.radioGroup}>
+                  <Radio value={true}>Active</Radio>
+                  <Radio value={false}>Inactive</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </div>
+          </div>
+        </div>
+        <div
+          style={{
+            width: "100%",
+          }}
+        >
+          <Button type="primary" htmlType="submit" className={formStyles.button} style={{ margin: "auto" }}>
             {id ? "Update Member" : "Create Member"}
           </Button>
-          {/* </Col> */}
-        </Row>
+        </div>
       </Form>
     </div>
   );

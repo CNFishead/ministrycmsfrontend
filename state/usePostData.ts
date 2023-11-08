@@ -19,15 +19,13 @@ const postFormData = async (url: string, formData: any) => {
  * @description react-query hook to update a Certificate
  */
 export default (options: {
-  url: string;
-  key: string;
   queriesToInvalidate?: string[];
   successMessage?: string;
   redirectUrl?: string;
 }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  return useMutation((data: any) => postFormData(options.url, data), {
+  return useMutation((data: { url: string; formData?: any }) => postFormData(data.url, data.formData), {
     onSuccess: (data: any) => {
       message.success(options.successMessage || "Data posted successfully");
       options.queriesToInvalidate?.forEach((query: string) => {
