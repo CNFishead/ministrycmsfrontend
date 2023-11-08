@@ -30,7 +30,9 @@ export default (options: {
   return useMutation((data: any) => postFormData(options.url, data), {
     onSuccess: (data: any) => {
       message.success(options.successMessage || "Data posted successfully");
-      queryClient.invalidateQueries(options.queriesToInvalidate || []);
+      options.queriesToInvalidate?.forEach((query: string) => {
+        queryClient.invalidateQueries([query]);
+      });
       if (options.redirectUrl) {
         router.push(options.redirectUrl);
       }

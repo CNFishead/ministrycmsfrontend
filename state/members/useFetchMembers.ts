@@ -20,8 +20,9 @@ export const fetchData = async (options?: {
   const setNumberPages = useSearchStore.getState().setNumberPages;
   // console.log(filter);
 
+  console.log(keyword);
   const { data } = await axios.get(
-    `${options?.url}/${options?.id}/?keyword=${keyword}&pageNumber=${pageNumber}&limit=${pageLimit}&filterOptions=${filter}&sortBy=${sort}`
+    `${options?.url}?keyword=${keyword}&pageNumber=${pageNumber}&limit=${pageLimit}&filterOptions=${filter}&sortBy=${sort}`
   );
 
   // data should contain a property pages, which is the number of pages, which we can pass to zustand's setNumberPages
@@ -45,6 +46,7 @@ export default (options?: {
   key: string;
   url?: string;
   id?: string;
+  enabled?: boolean;
   keyword?: string;
   pageNumber?: number;
   pageLimit?: number;
@@ -56,7 +58,8 @@ export default (options?: {
 }) => {
   const query = useQuery(
     [options?.key],
-    () =>
+    () => {
+      console.log(`fetching`);
       fetchData({
         url: options?.url,
         id: options?.id,
@@ -65,10 +68,12 @@ export default (options?: {
         defaultPageLimit: options?.pageLimit,
         defaultPageNumber: options?.pageNumber,
         defaultSort: options?.sort,
-      }),
+      });
+    },
     {
       onSuccess: options?.onSuccess,
       // refetchInterval: 2000,
+      enabled: options?.enabled ?? false,
       retry: 1,
       onError: options?.onError,
     }

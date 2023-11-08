@@ -8,22 +8,28 @@ import { useRouter } from "next/router";
  * @description Axio call to create or post data to api
  * @param formData
  * @returns
- * @todo add types
  */
-const deleteData = async (url: string, formData: any) => {
-  const { data } = await axios.delete(url, formData);
+const updateFormData = async (url: string, formData: any) => {
+  const { data } = await axios.put(url, formData);
   return data;
 };
 
 /**
  * @description react-query hook to update a Certificate
  */
-export default (options: { queriesToInvalidate?: string[]; successMessage?: string; redirectUrl?: string }) => {
+export default (options: {
+  url: string;
+  key: string;
+  queriesToInvalidate?: string[];
+  successMessage?: string;
+  redirectUrl?: string;
+}) => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  return useMutation((data: { url: string; formData?: any }) => deleteData(data.url, data.formData), {
+  return useMutation((data: any) => updateFormData(options.url, data), {
     onSuccess: (data: any) => {
-      message.success(options.successMessage || "Data Removed successfully");
+      console.log(options.queriesToInvalidate);
+      message.success(options.successMessage || "Data updated successfully");
       options.queriesToInvalidate?.forEach((query: string) => {
         queryClient.invalidateQueries([query]);
       });

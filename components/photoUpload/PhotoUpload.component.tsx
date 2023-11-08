@@ -84,7 +84,7 @@ const PhotoUpload = (props: Props) => {
   return (
     <>
       <Form.Item
-        label={props.label ? props.label : 'Image'}
+        label={props.label ? props.label : ''}
         name={props.name ? props.name : 'image'}
         tooltip={props.tooltip ? props.tooltip : undefined}
       >

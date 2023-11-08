@@ -19,7 +19,6 @@ import styles from './SearchWrapper.module.scss';
 
 import type { MenuProps } from 'antd';
 import { MdFilter, MdSort } from 'react-icons/md';
-import { useLibraryVideos } from '@/state/videos/userLibrary';
 import { useRouter } from 'next/router';
 
 const { Search } = Input;

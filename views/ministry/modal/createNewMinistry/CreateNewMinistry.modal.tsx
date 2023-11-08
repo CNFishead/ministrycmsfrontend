@@ -12,6 +12,8 @@ import { useSelectedProfile } from "@/state/profile/profile";
 import { Row } from "antd/lib";
 import MemberType from "@/types/MemberType";
 import usePostData from "@/state/usePostData";
+import { QueryClient } from "@tanstack/react-query";
+import useFetchMembers from "@/state/members/useFetchMembers";
 
 interface Props {
   open: boolean;
@@ -19,13 +21,17 @@ interface Props {
 }
 const CreateNewMinistry = ({ open, setOpen }: Props) => {
   const [form] = Form.useForm();
+  const queryClient = new QueryClient();
+  const [leaderSearch, setLeaderSearch] = React.useState("");
   const selectableOptions = selectableMinistryTypes();
   const { data: selectedProfile } = useSelectedProfile();
   const { data: membersListData, isLoading: loading } = useFetchData({
     url: `/member/${selectedProfile?.ministry?._id}`,
-    key: "members",
+    key: "membersList",
     enabled: !!selectedProfile?.ministry?._id,
+    keyword: leaderSearch
   });
+  // console.log(leaderSearch);
   const { mutate: createNewMinistry } = usePostData({
     url: `/ministry/${selectedProfile?.ministry?._id}`,
     key: "ministryCreate",
@@ -38,6 +44,12 @@ const CreateNewMinistry = ({ open, setOpen }: Props) => {
     setOpen(false);
   };
 
+  React.useEffect(() => {
+    // if leadersearch changes, invalidate members query
+    if (leaderSearch !== "") {
+      queryClient.invalidateQueries({ queryKey: ["membersList"] });
+    }
+  }, [leaderSearch]);
   return (
     <Modal
       className={styles.container}
@@ -102,20 +114,21 @@ const CreateNewMinistry = ({ open, setOpen }: Props) => {
           <Form.Item name="leader" className={styles.inputParent} label="Ministry Leader">
             <Select
               // onChange={() => console.log("changed")}
-              onSearch={() => console.log("searched")}
+              onSearch={(value) => {
+                setLeaderSearch(value);
+              }}
               showSearch
               placeholder="Select Ministry Leader"
               className={styles.input}
               defaultValue={form.getFieldsValue().leader}
-              options={membersListData?.members?.map((user: MemberType) => ({
-                label: (
-                  <Row>
-                    {user?.fullName} - {user?.email} - {user?.role}
-                  </Row>
-                ),
-                value: user._id,
-              }))}
-            ></Select>
+              loading={loading}
+            >
+              {membersListData?.members.map((member: MemberType) => (
+                <Select.Option key={member._id} value={member._id}>
+                  {member.firstName} {member.lastName}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Form>
       </Card>

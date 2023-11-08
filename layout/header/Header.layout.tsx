@@ -1,13 +1,13 @@
-import { useLayoutStore } from '@/state/ui/layout';
-import styles from './Header.module.scss';
-import { RxHamburgerMenu } from 'react-icons/rx';
-import { Avatar, Breadcrumb, Tooltip } from 'antd';
-import Link from 'next/link';
-import { useUser, logout } from '@/state/auth';
-import { BiLogOutCircle } from 'react-icons/bi';
-import { ReactNode } from 'react';
-import { useSelectedProfile } from '@/state/profile/profile';
-import Notifications from './components/Notifications.component';
+import { useLayoutStore } from "@/state/ui/layout";
+import styles from "./Header.module.scss";
+import { RxHamburgerMenu } from "react-icons/rx";
+import { Avatar, Breadcrumb, Tooltip } from "antd";
+import Link from "next/link";
+import { useUser, logout } from "@/state/auth";
+import { BiLogOutCircle } from "react-icons/bi";
+import { ReactNode } from "react";
+import { useSelectedProfile } from "@/state/profile/profile";
+import Notifications from "./components/Notifications.component";
 
 type Props = {
   pages?: Array<{ title: string; link?: string; icon?: ReactNode }>;
@@ -41,10 +41,7 @@ const Header = (props: Props) => {
             ) : (
               <Link
                 href={route.path as string}
-                className={`${
-                  routes[routes.length - 1].title === route.title &&
-                  styles.active
-                }`}
+                className={`${routes[routes.length - 1].title === route.title && styles.active}`}
               >
                 {route.title}
               </Link>
@@ -54,7 +51,7 @@ const Header = (props: Props) => {
             props.pages?.map((page) => {
               return {
                 title: page?.title,
-                path: page?.link || '',
+                path: page?.link || "",
 
                 // element: <Link href={page?.link || ""}>{page?.title}</Link>,
               };
@@ -67,10 +64,7 @@ const Header = (props: Props) => {
         <div className={styles.headerRight}>
           <div className={styles.userContainer}>
             <div className={styles.user}>
-              <Avatar
-                src={loggedInData.user.profileImageUrl}
-                className={styles.avatar}
-              />
+              <Avatar src={loggedInData.user.profileImageUrl} className={styles.avatar} />
               <div className={styles.userInfo}>
                 <h1>{selectedProfile?.ministry?.name} </h1>
                 <p>
@@ -80,12 +74,13 @@ const Header = (props: Props) => {
             </div>
             <Notifications />
             <Tooltip title="Logout">
-              <BiLogOutCircle
-                className={styles.logoutIcon}
+              <span
                 onClick={() => {
                   logout();
                 }}
-              />
+              >
+                <BiLogOutCircle className={styles.logoutIcon} />
+              </span>
             </Tooltip>
           </div>
         </div>

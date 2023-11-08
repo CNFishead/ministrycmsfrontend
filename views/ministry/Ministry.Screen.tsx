@@ -10,12 +10,14 @@ import Ministry from "@/types/Ministry";
 import Link from "next/link";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import useRemoveData from "@/state/useRemoveData";
+import { useRouter } from "next/router";
 
 const Ministry = () => {
   const [modalOpen, setModalOpen] = React.useState(false);
+  const router = useRouter();
   const { data: selectedProfile } = useSelectedProfile();
   const {
-    data: totalData,
+    data: ministryData,
     isFetching,
     isLoading: loading,
   } = useFetchData({
@@ -25,35 +27,32 @@ const Ministry = () => {
   });
 
   const { mutate: deleteMinistry } = useRemoveData({
-    url: `/ministry/${selectedProfile?.ministry?._id}/subministries`,
-    key: "ministryDelete",
     successMessage: "Ministry deleted successfully",
     queriesToInvalidate: ["ministryList"],
   });
 
   return (
     <div className={styles.container}>
-      <CreateNewMinistry open={modalOpen} setOpen={setModalOpen} />
       <SearchWrapper
         buttons={[
           {
             toolTip: "Create new Ministry",
             icon: <AiOutlinePlus className={styles.icon} />,
             onClick: () => {
-              setModalOpen(true);
+              router.push("/ministries/new");
             },
             type: "primary",
           },
         ]}
         placeholder="Search for ministries"
-        total={totalData?.total}
+        total={ministryData?.total}
         queryKey={"ministryList"}
         isFetching={isFetching}
       >
         <div className={styles.contentContainer}>
           <Table
             className={styles.table}
-            dataSource={totalData?.ministries}
+            dataSource={ministryData?.ministries}
             loading={loading}
             size="small"
             rowKey={(record: Ministry) => record._id}
@@ -62,6 +61,14 @@ const Ministry = () => {
                 title: "Ministry Name",
                 dataIndex: "name",
                 key: "name",
+              },
+              {
+                title: "# of Members",
+                dataIndex: "members",
+                key: "members",
+                render: (text: string, record: Ministry) => {
+                  return <span>{record.members?.length}</span>;
+                },
               },
               {
                 title: "Ministry Leader",
@@ -83,7 +90,7 @@ const Ministry = () => {
                 render: (text: string, record: Ministry) => {
                   return (
                     <div className={styles.actions}>
-                      <Link href={`/members/edit/${record._id}`}>
+                      <Link href={`/ministries/${record._id}`}>
                         <Button>
                           <FaEdit />
                         </Button>
@@ -94,7 +101,9 @@ const Ministry = () => {
                             title: "Are you sure you want to delete this ministry?",
                             content: "This action cannot be undone",
                             onOk: () => {
-                              deleteMinistry(record);
+                              deleteMinistry({
+                                url: `/ministry/${selectedProfile?.ministry?._id}/subministries/${record._id}`,
+                              });
                             },
                           })
                         }

@@ -11,6 +11,7 @@ export const fetchData = async (options?: {
   defaultFilter?: string;
   defaultSort?: string;
 }) => {
+  console.log(`default keyword: ${options?.defaultKeyword}`);
   const keyword = options?.defaultKeyword ?? useSearchStore.getState().search.toLowerCase();
   const pageNumber = options?.defaultPageNumber ?? useSearchStore.getState().pageNumber;
   const pageLimit = options?.defaultPageLimit ?? useSearchStore.getState().pageLimit;
