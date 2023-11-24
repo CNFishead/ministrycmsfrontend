@@ -77,6 +77,10 @@ const MinistryDetails = () => {
           layout="vertical"
           className={formStyles.form}
           onFinish={() => onFinish(form.getFieldsValue())}
+          initialValues={{
+            ministryImageUrl: "http://localhost:5000/images/default-ministry-banner.jpg",
+            ministryType: "Small Group",
+          }}
         >
           <div className={formStyles.group}>
             <div className={formStyles.editContainer}>

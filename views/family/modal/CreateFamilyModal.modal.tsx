@@ -3,23 +3,28 @@ import styles from "./CreateFamilyModal.module.scss";
 import { Button, Form, Input, Modal, Tooltip } from "antd";
 import { FaQuestionCircle } from "react-icons/fa";
 import { BiUserPlus } from "react-icons/bi";
+import usePostData from "@/state/usePostData";
 
 interface CreateFamilyModalProps {
   open: boolean;
-  onClose: () => void;
+  onClose: (form: any) => void;
 }
 
 const CreateFamilyModal = (props: CreateFamilyModalProps) => {
   const [form] = Form.useForm();
+
+  const { mutate: createNewFamily } = usePostData({ queriesToInvalidate: ["families"] });
   const onFinish = (values: any) => {
-    // props.dispatch(createFamilyAction(values) as any);
+    createNewFamily({ url: "/family", formData: values });
+    form.resetFields();
+    props.onClose(form);
   };
 
   return (
     <Modal
       title="Create Family"
       open={props.open}
-      onCancel={props.onClose}
+      onCancel={() => props.onClose(form)}
       className={styles.container}
       footer={
         <div className={styles.footer}>
@@ -54,7 +59,7 @@ const CreateFamilyModal = (props: CreateFamilyModalProps) => {
                 }
                 name="name"
               >
-                <Input type="text" placeholder="Name" className={`${styles.input} ${styles.addon}`} />
+                <Input type="text" placeholder="Name" className={`${styles.input} ${styles.addon}`} autoFocus />
               </Form.Item>
             </div>
           </Form>

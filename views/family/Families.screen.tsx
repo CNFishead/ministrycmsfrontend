@@ -43,7 +43,13 @@ const Families = () => {
         isFetching={isLoading}
         queryKey="families"
       >
-        <CreateFamilyModal open={modalOpen} onClose={() => setModalOpen(false)} />
+        <CreateFamilyModal
+          open={modalOpen}
+          onClose={(form) => {
+            setModalOpen(false);
+            form.resetFields();
+          }}
+        />
         <Row className={styles.contentContainer} justify={"space-evenly"}>
           {familyList?.families?.map((family: FamilyType) => {
             return (

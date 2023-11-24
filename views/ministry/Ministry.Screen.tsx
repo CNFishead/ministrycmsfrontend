@@ -76,10 +76,12 @@ const Ministry = () => {
                 key: "leader",
                 render: (text: string, record: Ministry) => {
                   return (
-                    <div className={styles.leader}>
-                      <Avatar src={record.leader?.profileImageUrl} />
-                      <span>{record.leader?.fullName}</span>
-                    </div>
+                    <Link href={`/members/edit/${record.leader?._id}`}>
+                      <div className={styles.leader}>
+                        <Avatar src={record.leader?.profileImageUrl} />
+                        <span>{record.leader?.fullName}</span>
+                      </div>
+                    </Link>
                   );
                 },
               },

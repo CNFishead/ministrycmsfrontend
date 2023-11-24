@@ -9,7 +9,7 @@ const Header = (props: Props) => {
     <div className={styles.container}>
       <div className={styles.welcomeContainer}>
         <h1 className={styles.text}>
-          Welcome <span>{loggedInData.user.profile?.organizationName}</span>
+          Welcome <span>{loggedInData?.user?.profile?.organizationName}</span>
         </h1>
         <p>What would you like to do today?</p>
       </div>

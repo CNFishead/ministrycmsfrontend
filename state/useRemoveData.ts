@@ -1,6 +1,6 @@
 import axios from "@/utils/axios";
 import { message } from "antd";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import errorHandler from "@/utils/errorHandler";
 import { useRouter } from "next/router";
 

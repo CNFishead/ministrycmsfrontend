@@ -13,15 +13,21 @@ import { useSelectedProfile } from "@/state/profile/profile";
 import moment from "moment";
 import FamilyType from "@/types/FamilyType";
 import MinistryType from "@/types/Ministry";
+import { useQueryClient } from "@tanstack/react-query";
+import { set } from "nprogress";
 
 const CreateNewMember = () => {
   const [form] = Form.useForm();
+  console.log(form.getFieldsValue());
   const router = useRouter();
   const { id } = router.query;
-
-  const [timer, setTimer] = React.useState<any>(null); // timer for the search bar
+  const queryClient = useQueryClient();
+  const [timer, setTimer] = React.useState<any>(null);
+  const [familyKeyword, setFamilyKeyword] = React.useState<string>("");
+  const [ministryKeyword, setMinistryKeyword] = React.useState<string>("");
   const [createFamilyModal, setCreateFamilyModal] = React.useState<boolean>(false);
-
+  const [selectedFamily, setSelectedFamily] = React.useState<FamilyType>();
+  const [image, setImage] = React.useState<any>(null); // the image that is uploaded
   const { data: ministryData, isLoading: loadingMinistry } = useSelectedProfile();
 
   const { data: memberInformation, isLoading: loading } = useFetchData({
@@ -29,14 +35,20 @@ const CreateNewMember = () => {
     key: "memberInformation",
     enabled: !!id,
   });
-  const { data: familiesList, isLoading: familiesLoading } = useFetchData({
+  const {
+    data: familiesList,
+    isLoading: familiesLoading,
+    isFetching: familiesFetching,
+  } = useFetchData({
     url: `/family`,
     key: "familyList",
+    keyword: familyKeyword,
   });
   const { data: ministriesList, isLoading: ministriesLoading } = useFetchData({
     url: `/ministry/${ministryData?.ministry?._id}/subministries`,
     key: "ministryList",
     enabled: !!ministryData?.ministry?._id,
+    keyword: ministryKeyword,
   });
 
   const { mutate: updateMember } = useUpdateData({
@@ -60,26 +72,43 @@ const CreateNewMember = () => {
     createMember({ url: `/member`, formData: { ...values } });
   };
 
-  const onSearch = (val: string) => {
+  const onSearch = (val: string, hook: any) => {
     // if val is an empty string, then dont search
     if (val === "") return;
     clearTimeout(timer);
     setTimer(
       setTimeout(() => {
-        // dispatch(getFamiliesAction({ keyword: val }) as any);
+        hook(val);
       }, 1000) as any // wait 1000ms before searching
     );
   };
 
   useEffect(() => {
     if (memberInformation) {
-      form.setFieldsValue({ ...memberInformation?.data, birthday: moment(memberInformation?.data?.birthday) });
+      form.setFieldsValue({
+        ...memberInformation?.data,
+        birthday: moment(memberInformation?.data?.birthday),
+        family: { _id: memberInformation?.data?.family?._id, name: memberInformation?.data?.family?.name },
+        ministry: memberInformation?.data?.ministry?.map((ministry: MinistryType) => {
+          return { value: ministry._id, label: ministry.name };
+        }),
+      });
+      setImage(memberInformation?.data?.profileImageUrl);
     }
   }, [memberInformation]);
+  const handleFamilyChange = (value: any, option: any) => {
+    // Set the selectedFamily state when the user makes a selection
+    setSelectedFamily(option?.data);
+    form.setFieldsValue({
+      ...form.getFieldsValue(),
+      family: { _id: option?.data?._id, name: option?.data?.name },
+    });
+  };
 
   useEffect(() => {
     return () => {
-      // TODO: clear the query cache
+      // clear the form
+      form.resetFields();
     };
   }, []);
   return (
@@ -96,88 +125,97 @@ const CreateNewMember = () => {
           maritalStatus: "single",
           location: {
             country: "United States",
-            state: "Texas",
+            state: "Tennessee",
           },
           role: "member",
           isActive: true,
         }}
       >
-        <Row gutter={16} justify={"space-evenly"}>
+        {/* family information */}
+        <Row className={formStyles.editContainer}>
           <Col span={24}>
             <Divider orientation="center">
               <Tooltip title={`Easily identify Members from their profile photo!`}>Profile Photo</Tooltip>
             </Divider>
-          </Col>
-          <Col span={8} lg={6}>
-            <div className={styles.imageUploadContainer}>
-              <div className={styles.imageContainer}>
-                <PhotoUpload
-                  name="profileImageUrl"
-                  listType="picture-card"
-                  isAvatar={true}
-                  form={form}
-                  action={`${process.env.API_URL}/upload`}
-                  default={form.getFieldsValue().profileImageUrl}
-                  placeholder="Upload a profile photo"
-                />
+            {/* if there is an id, wait for the fetch before displaying the photo */}
+            {id && !loading && (
+              <div className={styles.imageUploadContainer}>
+                <div className={styles.imageContainer}>
+                  <PhotoUpload
+                    name="profileImageUrl"
+                    listType="picture-card"
+                    isAvatar={true}
+                    form={form}
+                    action={`${process.env.API_URL}/upload`}
+                    default={image}
+                    placeholder="Upload a profile photo"
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </Col>
-        </Row>
-        {/* family information */}
-        <Row gutter={16} className={formStyles.editContainer}>
-          <Col span={12}>
-            <Divider orientation="center">Family Information</Divider>
-            <Form.Item name="family" className={styles.inputParent}>
-              <Select
-                showSearch
-                placeholder="Select a family"
-                optionFilterProp="children"
-                onSearch={onSearch}
-                // filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                className={formStyles.input}
-                loading={familiesLoading}
-              >
-                {familiesList?.families?.map((family: FamilyType) => (
-                  <Select.Option key={family._id} value={family._id}>
-                    {family.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Col span={24} className={styles.mutedText}>
-              Associates this member with a family, This is an optional step, but is recommended for better
-              organization. if the member is a child, its required for them to be associated with a family, with at
-              least one adult. If the family does not exist, you can create one by clicking{" "}
-              <span onClick={() => setCreateFamilyModal(true)} className={styles.spanLink}>
-                here
-              </span>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Divider orientation="center">Family Information</Divider>
+              <Form.Item name={["family"]}>
+                <Form.Item
+                  name={
+                    // create the family object field
+                    ["family", "name"]
+                  }
+                  className={styles.inputParent}
+                >
+                  <Select
+                    showSearch
+                    placeholder="Select a family"
+                    optionFilterProp="children"
+                    onSearch={(value) => onSearch(value, setFamilyKeyword)}
+                    onChange={(value, option) => handleFamilyChange(value, option)}
+                    className={formStyles.input}
+                    loading={familiesFetching}
+                  >
+                    {familiesList?.families?.map((family: FamilyType) => (
+                      <Select.Option key={family._id} value={family._id} data={family}>
+                        {family.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Form.Item>
+              <Col span={24} className={styles.mutedText}>
+                Associates this member with a family, This is an optional step, but is recommended for better
+                organization. if the member is a child, its required for them to be associated with a family, with at
+                least one adult. If the family does not exist, you can create one by clicking{" "}
+                <span onClick={() => setCreateFamilyModal(true)} className={styles.spanLink}>
+                  here
+                </span>
+              </Col>
             </Col>
-          </Col>
-          <Col span={12}>
-            <Divider orientation="center">Ministry Information</Divider>
-            <Form.Item name="ministry" className={styles.inputParent}>
-              <Select
-                showSearch
-                placeholder="Select a ministry"
-                optionFilterProp="children"
-                onSearch={onSearch}
-                // filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                className={styles.input}
-                loading={ministriesLoading}
-              >
-                {ministriesList?.ministries?.map((ministry: MinistryType) => (
-                  <Select.Option key={ministry._id} value={ministry._id}>
-                    {ministry.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Col span={24} className={styles.mutedText}>
-              Associate this member with a ministry, This is an optional step, but is recommended for better
-              organization.
+            <Col span={12}>
+              <Divider orientation="center">Ministry Information</Divider>
+              <Form.Item name={"ministry"}>
+                <Select
+                  showSearch
+                  placeholder="Select a ministry"
+                  optionFilterProp="children"
+                  onSearch={(val: any) => onSearch(val, setMinistryKeyword)}
+                  className={formStyles.input}
+                  mode={"multiple"}
+                  loading={ministriesLoading}
+                >
+                  {ministriesList?.ministries?.map((ministry: MinistryType) => (
+                    <Select.Option key={ministry._id} value={ministry._id} name={ministry.name}>
+                      {ministry.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Col span={24} className={styles.mutedText}>
+                Associate this member with a ministry, This is an optional step, but is recommended for better
+                organization.
+              </Col>
             </Col>
-          </Col>
+          </Row>
         </Row>
         <div className={formStyles.editContainer}>
           <Divider orientation="center">Member Information</Divider>

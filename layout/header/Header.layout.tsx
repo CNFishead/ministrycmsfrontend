@@ -64,11 +64,11 @@ const Header = (props: Props) => {
         <div className={styles.headerRight}>
           <div className={styles.userContainer}>
             <div className={styles.user}>
-              <Avatar src={loggedInData.user.profileImageUrl} className={styles.avatar} />
+              <Avatar src={loggedInData?.user?.profileImageUrl} className={styles.avatar} />
               <div className={styles.userInfo}>
                 <h1>{selectedProfile?.ministry?.name} </h1>
                 <p>
-                  {loggedInData.user.firstName} {loggedInData.user.lastName}
+                  {loggedInData?.user?.firstName} {loggedInData?.user?.lastName}
                 </p>
               </div>
             </div>
