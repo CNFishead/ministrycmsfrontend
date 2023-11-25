@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import User from "@/types/User";
-import { RootState } from "@/redux/store";
+// import { RootState } from "@/redux/store";
 
 //make a type with children as a prop
 type Props = {
@@ -23,18 +23,18 @@ type Props = {
  */
 const PrivateRoute = (props: Props) => {
   const router = useRouter();
-  const { user = {} as User } = useSelector((state: RootState) => state.auth);
+  // const { user = {} as User } = useSelector((state: RootState) => state.auth);
   const { permissions } = props;
   // if the user is not logged in, redirect them to the login page
-  if (typeof window !== undefined && Object.keys(user).length === 0) {
+  if (typeof window !== undefined && Object.keys({}).length === 0) {
     router.push("/login");
     return <></>;
   }
   // if the user is logged in but does not have the required permission, redirect them to the home page
-  if (!permissions.includes(user.role)) {
-    router.push("/");
-    return <></>;
-  }
+  // if (!permissions.includes(user?.role)) {
+  //   router.push("/");
+  //   return <></>;
+  // }
 };
 
 export default PrivateRoute;

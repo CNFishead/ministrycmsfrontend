@@ -33,8 +33,8 @@ const CreateNewMinistry = ({ open, setOpen }: Props) => {
   });
   // console.log(leaderSearch);
   const { mutate: createNewMinistry } = usePostData({
-    url: `/ministry/${selectedProfile?.ministry?._id}`,
-    key: "ministryCreate",
+    // url: `/ministry/${selectedProfile?.ministry?._id}`,
+    // key: "ministryCreate",
     successMessage: "Ministry created successfully",
     queriesToInvalidate: ["ministryList"],
   });

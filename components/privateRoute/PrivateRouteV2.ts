@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
 import User from "@/types/User";
-import { RootState } from '@/redux/store';
-import { AnyAction, Store } from 'redux';
-import { useSelector } from 'react-redux';
+// import { RootState } from '@/redux/store';
+// import { AnyAction, Store } from 'redux';
+// import { useSelector } from 'react-redux';
 
 /**
  * @description - Function that checks the user in redux store and checks if the user has the appropriate permissions to view the page,

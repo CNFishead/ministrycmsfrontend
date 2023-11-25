@@ -86,7 +86,7 @@ const FeatureModal = (props: Props) => {
               {!props.hasFeature
                 ? getPrice(
                     [
-                      ...featuresData?.allFeatures.filter((f) =>
+                      ...featuresData?.allFeatures.filter((f: any) =>
                         loggedInData.user.features.includes(f._id)
                       ),
                       ...props.selectedFeatures,
@@ -95,7 +95,7 @@ const FeatureModal = (props: Props) => {
                   )
                 : (
                     getPrice(
-                      featuresData?.allFeatures.filter((f) =>
+                      featuresData?.allFeatures.filter((f: any) =>
                         loggedInData.user.features.includes(f._id)
                       ),
                       loggedInData.user

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from './TopPerformingContentCard.module.scss';
 import { Table, Segmented, Button, Skeleton } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import VideoStat from '@/components/videoStat/VideoStat.component';
+// import VideoStat from '@/components/videoStat/VideoStat.component';
 import Image from 'next/image';
 import Error from '@/components/error/Error.component';
 import { useSearchStore } from '@/state/search/search';
@@ -70,20 +70,20 @@ const TopPerformingContentCard = (props: Props) => {
       key: 'views',
       render: (amount) => {
         console.log(amount);
-        return <VideoStat type="Views" amount={amount} />;
+        return  <></> // <VideoStat type="Views" amount={amount} />;
       },
     },
     {
       title: 'Likes',
       dataIndex: 'likes',
       key: 'likes',
-      render: (amount) => <VideoStat type="Likes" amount={amount} />,
+      render: (amount) =>  <></> // <VideoStat type="Likes" amount={amount} />,
     },
     {
       title: 'Comments',
       dataIndex: 'comments',
       key: 'comments',
-      render: (amount) => <VideoStat type="Comments" amount={amount} />,
+      render: (amount) =>  <></> // <VideoStat type="Comments" amount={amount} />,
     },
   ];
 

@@ -5,9 +5,6 @@ import PhotoUpload from "@/components/photoUpload/PhotoUpload.component";
 import { states } from "@/data/states";
 import { countries } from "@/data/countries";
 import { BiUserPlus } from "react-icons/bi";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import createMember from "@/redux/actions/member/createMember";
 
 interface Props {
   open: boolean;
@@ -17,16 +14,9 @@ interface Props {
 
 const CreateNewMember = (props: Props) => {
   const [form] = Form.useForm();
-  const dispatch = useDispatch();
-  const {
-    selectedMinistry: { ministry },
-    mainMinistry: { ministry: mainMinistry },
-  } = useSelector((state: RootState) => state.ministry);
 
   const onFinish = (values: any) => {
     // ministry, if their isnt a selectedMinistry, then use the mainMinistry
-    const ministryId = ministry ? ministry._id : mainMinistry._id;
-    dispatch(createMember({ ...values, ministry: ministryId }) as any);
     // close the modal
     props.onClose();
   };

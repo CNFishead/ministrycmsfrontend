@@ -1,3 +1,5 @@
+import FeatureType from "./FeatureType";
+
 export default interface User {
   token: string;
   fullName: string;
@@ -9,10 +11,11 @@ export default interface User {
     name: string;
     id: string;
     ministryImageUrl: string;
-  }
+  };
   role: string;
   username: string;
   id: string;
   _id: string;
   phoneNumber: string;
+  features: FeatureType[];
 }

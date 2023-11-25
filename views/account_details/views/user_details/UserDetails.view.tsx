@@ -1,68 +1,74 @@
 import React from "react";
 import styles from "./UserDetails.module.scss";
 import { Button, Card, Form, Input, InputNumber, Skeleton, Typography } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import getMe from "@/redux/actions/user/getMe";
-import { RootState } from "@/redux/store";
 import User from "@/types/User";
 import { FaSave } from "react-icons/fa";
-import updateUser from "@/redux/actions/user/updateUser";
 import PhotoUpload from "@/components/photoUpload/PhotoUpload.component";
 import Error from "@/components/error/Error.component";
 
 const UserDetails = () => {
   const [form] = Form.useForm();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  const {
-    userDetails: { user, loading, error },
-    userUpdate: { loading: updateLoading },
-  } = useSelector((state: RootState) => state.user);
+  // const {
+  //   userDetails: { user, loading, error },
+  //   userUpdate: { loading: updateLoading },
+  // } = useSelector((state: RootState) => state.user);
 
-  const { user: loggedInUser } = useSelector((state: RootState) => state.auth);
+  // const { user: loggedInUser } = useSelector((state: RootState) => state.auth);
 
-  React.useEffect(() => {
-    if (!user) dispatch(getMe() as any);
-    // otherwise set form values
-    form.setFieldsValue({ ...user });
-  }, [user]);
+  React.useEffect(
+    () => {
+      // if (!user) dispatch(getMe() as any);
+      // otherwise set form values
+      // form.setFieldsValue({ ...user });
+    },
+    [
+      // user
+    ]
+  );
 
   const onFinish = (values: any) => {
     console.log(values);
-    dispatch(
-      updateUser({
-        ...values,
-        profileImageUrl: values.profileImageUrl?.file?.response?.imageUrl || values.profileImageUrl,
-      }) as any
-    );
+    // dispatch(
+    //   updateUser({
+    //     ...values,
+    //     profileImageUrl: values.profileImageUrl?.file?.response?.imageUrl || values.profileImageUrl,
+    //   }) as any
+    // );
   };
 
-  if (typeof window === "undefined" || loading)
-    return (
-      <Card title="Account Details" className={styles.container}>
-        <div className={styles.imageUploadContainer}>
-          <div className={styles.imageContainer}>
-            <PhotoUpload
-              listType="picture-card"
-              isAvatar={true}
-              action={`${process.env.API_URL}/upload`}
-              default={user?.profileImageUrl}
-              form={form}
-            />
-          </div>
-        </div>
-        <Skeleton active />
-      </Card>
-    );
-  if (error || !user)
-    return (
-      <Card title="Account Details" className={styles.container}>
-        <Error error={!user ? "No user object found, please try navigating away from the page and back" : error} />
-      </Card>
-    );
+  // if (typeof window === "undefined" || loading)
+  // return (
+  //   <Card title="Account Details" className={styles.container}>
+  //     <div className={styles.imageUploadContainer}>
+  //       <div className={styles.imageContainer}>
+  //         <PhotoUpload
+  //           listType="picture-card"
+  //           isAvatar={true}
+  //           action={`${process.env.API_URL}/upload`}
+  //           default={user?.profileImageUrl}
+  //           form={form}
+  //         />
+  //       </div>
+  //     </div>
+  //     <Skeleton active />
+  //   </Card>
+  // );
+  // if (error || !user)
+  //   return (
+  //     <Card title="Account Details" className={styles.container}>
+  //       <Error error={!user ? "No user object found, please try navigating away from the page and back" : error} />
+  //     </Card>
+  //   );
   return (
     <Card title="Account Details" className={styles.container}>
-      <Form form={form} layout="vertical" className={styles.contentContainer} onFinish={() => onFinish(form.getFieldsValue())}>
+      <Form
+        form={form}
+        layout="vertical"
+        className={styles.contentContainer}
+        onFinish={() => onFinish(form.getFieldsValue())}
+      >
         <div className={styles.imageUploadContainer}>
           <div className={styles.imageContainer}>
             <PhotoUpload
@@ -71,7 +77,7 @@ const UserDetails = () => {
               isAvatar={true}
               form={form}
               action={`${process.env.API_URL}/upload`}
-              default={user?.profileImageUrl}
+              // default={user?.profileImageUrl}
               placeholder="Upload a profile photo"
             />
           </div>
@@ -113,7 +119,13 @@ const UserDetails = () => {
         </Form.Item>
         <div className={styles.buttonContainer}>
           <Form.Item>
-            <Button htmlType="submit" type="primary" className={styles.button} loading={updateLoading} icon={<FaSave />}>
+            <Button
+              htmlType="submit"
+              type="primary"
+              className={styles.button}
+              // loading={updateLoading}
+              icon={<FaSave />}
+            >
               Save
             </Button>
           </Form.Item>

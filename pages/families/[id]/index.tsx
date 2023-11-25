@@ -12,7 +12,7 @@ export default function FamilyEditScreen(props: Props) {
   const isMobile = useMediaQuery({ query: "(max-width: 1024px)" });
   return (
     <PageLayout pages={[navigation().members.links.families]} largeSideBar={isMobile}>
-      <FamilyEdit id={props.id} />
+      <FamilyEdit />
     </PageLayout>
   );
 }

@@ -19,14 +19,14 @@ type Props = {};
 const SettingsForm = (props: Props) => {
   const [passwordForm] = Form.useForm();
 
-  const { mutate: updateUser } = useUpdateUser();
+  // const { mutate: updateUser } = useUpdateUser();
   const onFinishChangePassword = (values: any) => {
     console.log(values);
 
     if (values.password != values.confirmNewPassword)
       return message.error('Passwords do not match');
 
-    updateUser(values);
+    // updateUser(values);
   };
   const openChangePasswordModal = () => {
     Modal.info({

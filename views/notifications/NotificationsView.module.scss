@@ -1,11 +1,11 @@
-@import '../../globals.scss';
+@import "@/styles/globals.scss";
 .notification {
   padding: 20px;
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
   flex-direction: column;
-  border-bottom: var(--primary-light);-blue 1px solid;
+  border-bottom: var(--primary-light) 1px solid;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 100px;
@@ -17,11 +17,11 @@
     background-color: var(--primary);
   }
   &:hover {
-    background-color: var(--primary-light);;
+    background-color: var(--primary-light);
     cursor: pointer;
   }
   .icon {
-    color: var(--primary);;
+    color: var(--primary);
     font-size: 20px;
 
     margin: 0;
@@ -46,14 +46,14 @@
     .description {
       font-size: 15px;
       font-weight: 400;
-      color: var(--primary);;
+      color: var(--primary);
     }
     .date {
       margin-top: 5px;
 
       font-size: 12px;
       font-weight: 400;
-      color: var(--primary-light);;
+      color: var(--primary-light);
     }
   }
   .buttons {

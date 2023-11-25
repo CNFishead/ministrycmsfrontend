@@ -20,8 +20,8 @@ const SettingsView = (props: Props) => {
     error: userErrorDetails,
     isLoading: userLoadingDetails,
   } = useUserDetails(loggedInData?.user._id);
-  const { mutate: updateUser, isLoading: userUpdateIsLoading } =
-    useUpdateUser();
+  // const { mutate: updateUser, isLoading: userUpdateIsLoading } =
+  //   useUpdateUser();
   const [form] = Form.useForm();
   const [unsaved, setUnsaved] = useState(false);
   useWarnIfUnsavedChanges(unsaved, () => {
@@ -29,7 +29,7 @@ const SettingsView = (props: Props) => {
   });
 
   const onFinish = (values: any) => {
-    updateUser(values);
+    // updateUser(values);
     setUnsaved(false);
   };
 
@@ -61,7 +61,9 @@ const SettingsView = (props: Props) => {
         <Container title="Settings">
           {isLoading ? <Loader /> : <SettingsForm />}
         </Container>
-        <SaveButton isLoading={userUpdateIsLoading} />
+        <SaveButton 
+        // isLoading={userUpdateIsLoading} 
+        />
       </Form>
     </div>
   );

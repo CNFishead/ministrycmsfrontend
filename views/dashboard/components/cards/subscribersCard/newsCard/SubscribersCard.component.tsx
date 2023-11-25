@@ -4,7 +4,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { useState } from 'react';
 import Error from '@/components/error/Error.component';
 import Link from 'next/link';
-import VideoStat from '@/components/videoStat/VideoStat.component';
+// import VideoStat from '@/components/videoStat/VideoStat.component';
 import { BsFillPeopleFill } from 'react-icons/bs';
 
 type Props = {
@@ -35,7 +35,7 @@ const SubscribersCard = (props: Props) => {
       dataIndex: 'likes',
       key: 'likes',
       render: (likes) => {
-        return <VideoStat amount={likes} type="Likes" />;
+        return <></> // <VideoStat amount={likes} type="Likes" />;
       },
     },
     {
@@ -43,7 +43,7 @@ const SubscribersCard = (props: Props) => {
       dataIndex: 'comments',
       key: 'comments',
       render: (comments) => {
-        return <VideoStat amount={comments} type="Comments" />;
+        return  <></> // <VideoStat amount={comments} type="Comments" />;
       },
     },
     {
@@ -51,7 +51,7 @@ const SubscribersCard = (props: Props) => {
       dataIndex: 'watchedVideos',
       key: 'watched',
       render: (watched) => {
-        return <VideoStat amount={watched} type="Views" />;
+        return  <></> // <VideoStat amount={watched} type="Views" />;
       },
     },
   ];

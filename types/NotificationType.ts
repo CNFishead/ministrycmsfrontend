@@ -1,4 +1,4 @@
-import UserType from './UserType';
+import UserType from './User';
 
 export default interface NotificationType {
   _id: string;

@@ -9,6 +9,7 @@ import {
 } from '@/state/notifications/useNotifications';
 import getNotificationLink from '@/utils/getNotificationLink';
 import NotificationItem from '@/components/notificationItem/NotificationItem.component';
+import NotificationType from '@/types/NotificationType';
 
 type Props = {};
 
@@ -19,7 +20,7 @@ const Notifications = (props: Props) => {
   return (
     <div className={styles.container}>
       <Tooltip title="Notifications">
-        <Badge count={data?.notifications.filter((n) => !n.opened).length}>
+        <Badge count={data?.notifications.filter((n: any) => !n.opened).length}>
           <Button
             type="text"
             onClick={() => setIsOpen(!isOpen)}
@@ -34,7 +35,7 @@ const Notifications = (props: Props) => {
         <div className={styles.header}>
           <p>Notifications</p>
           <Badge
-            count={data?.notifications.filter((n) => !n.opened).length}
+            count={data?.notifications.filter((n: any) => !n.opened).length}
             size="small"
           />
         </div>
@@ -45,7 +46,7 @@ const Notifications = (props: Props) => {
               0,
               data?.notifications.length > 3 ? 3 : data?.notifications.length
             )
-            .map((notification) => {
+            .map((notification: NotificationType) => {
               return (
                 <NotificationItem
                   notification={notification}

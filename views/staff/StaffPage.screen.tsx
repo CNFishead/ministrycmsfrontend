@@ -1,16 +1,10 @@
 import React from "react";
 import styles from "./StaffPage.module.scss";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import SearchWrapper from "@/layout/searchWrapper/SearchWrapper.layout";
 import { AiOutlinePlus, AiOutlineUser } from "react-icons/ai";
 import { Modal } from "antd";
 
 const StaffScreen = () => {
-  const {
-    selectedMinistry: { ministry },
-  } = useSelector((state: RootState) => state.ministry);
-
   const handleSearch = (value: string) => {
     console.log(value);
   };
@@ -34,8 +28,10 @@ const StaffScreen = () => {
             type: "primary",
           },
         ]}
+        queryKey="staff"
+        total={0}
+        isFetching={false}
         placeholder="Search Staff Members"
-        // action={handleSearch}
       >
         <div className={styles.contentContainer}></div>
       </SearchWrapper>
