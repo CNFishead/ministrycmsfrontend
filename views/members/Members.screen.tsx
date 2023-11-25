@@ -118,7 +118,7 @@ const Members = () => {
               {
                 title: "Role",
                 dataIndex: "role",
-                key: "role",
+                key: "role", 
               },
               {
                 title: "Birthday",
