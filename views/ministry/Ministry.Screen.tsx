@@ -45,7 +45,7 @@ const Ministry = () => {
           },
         ]}
         placeholder="Search for ministries"
-        total={ministryData?.total}
+        total={ministryData?.totalCount}
         queryKey={"ministryList"}
         isFetching={isFetching}
       >

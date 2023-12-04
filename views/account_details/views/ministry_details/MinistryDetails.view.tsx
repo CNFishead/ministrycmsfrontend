@@ -9,6 +9,8 @@ import UserItem from "@/components/userItem/UserItem.component";
 import Error from "@/components/error/Error.component";
 import { MdError } from "react-icons/md";
 import selectableMinistryTypes from "@/data/selectableMinistryTypes";
+import { useUser } from "@/state/auth";
+import { useSelectedProfile } from "@/state/profile/profile";
 
 const MinistryDetails = () => {
   const selectableOptions = selectableMinistryTypes();
@@ -21,39 +23,34 @@ const MinistryDetails = () => {
 
   // const { user: loggedInUser } = useSelector((state: RootState) => state.auth);
 
-  React.useEffect(
-    () => {
-      // if (!loggedInUser) return;
-      // if (!ministry) dispatch(getMinistry(loggedInUser.ministry._id) as any);
-      // otherwise set form values
-      // form.setFieldsValue({ ...ministry });
-    },
-    [
-      // ministry
-    ]
-  );
+  const { data: loggedInUser } = useUser();
+  const { data: selectedProfile, isLoading: loading, isError, error } = useSelectedProfile();
+
+  React.useEffect(() => {
+    form.setFieldsValue({ ...selectedProfile?.ministry });
+  }, [selectedProfile]);
 
   const onFinish = (values: any) => {
     // dispatch(updateMinistry(ministry._id, values, true) as any);
   };
 
-  // if (loading)
-  //   return (
-  //     <Card title="Main Ministry Details" className={styles.container}>
-  //       <Skeleton active />
-  //     </Card>
-  //   );
-  // if (error)
-  //   return (
-  //     <Card title="Main Ministry Details" className={styles.container}>
-  //       <Error error={error} />
-  //     </Card>
-  //   );
+  if (loading)
+    return (
+      <Card title="Main Ministry Details" className={styles.container}>
+        <Skeleton active />
+      </Card>
+    );
+  if (isError)
+    return (
+      <Card title="Main Ministry Details" className={styles.container}>
+        <Error error={error} />
+      </Card>
+    );
   return (
     <Card title="Main Ministry Details" className={styles.container}>
       <div className={styles.leaderInformation}>
         <h3>Ministry Leader</h3>
-        {/* <UserItem user={ministry?.leader} /> */}
+        <UserItem user={selectedProfile?.ministry?.leader} />
       </div>
       <Form
         form={form}
@@ -69,7 +66,7 @@ const MinistryDetails = () => {
               name="ministryImageUrl"
               form={form}
               action={`${process.env.API_URL}/upload`}
-              // default={ministry?.ministryImageUrl}
+              default={selectedProfile?.ministry?.ministryImageUrl}
             />
           </div>
         </div>
@@ -84,7 +81,7 @@ const MinistryDetails = () => {
           <Select
             placeholder="Select Ministry Type"
             className={styles.input}
-            // defaultValue={ministry?.ministryType}
+            defaultValue={selectedProfile?.ministry?.ministryType}
           >
             {selectableOptions.map((option) => (
               <Select.Option key={option.value} value={option.value}>

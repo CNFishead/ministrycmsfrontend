@@ -90,7 +90,7 @@ const CreateNewMember = () => {
         birthday: moment(memberInformation?.data?.birthday),
         family: { _id: memberInformation?.data?.family?._id, name: memberInformation?.data?.family?.name },
         ministry: memberInformation?.data?.ministry?.map((ministry: MinistryType) => {
-          return { value: ministry._id, label: ministry.name };
+          return { value: ministry._id, label: ministry.name, _id: ministry._id };
         }),
       });
       setImage(memberInformation?.data?.profileImageUrl);
@@ -345,22 +345,22 @@ const CreateNewMember = () => {
           {/* membership information */}
           <Divider orientation="center">Membership Information</Divider>
           <div className={formStyles.group}>
-            <Form.Item name="role" label="Role in The Church">
-              <Select placeholder="Role" className={styles.input}>
-                <Select.Option value="member">Member</Select.Option>
-                <Select.Option value="leader">Leader</Select.Option>
-                <Select.Option value="staff">Staff</Select.Option>
-                <Select.Option value="admin">Admin</Select.Option>
-              </Select>
-            </Form.Item>
-            <div>
-              <Form.Item name="isActive" className={styles.radioContainer} label="Active Member">
-                <Radio.Group className={styles.radioGroup}>
-                  <Radio value={true}>Active</Radio>
-                  <Radio value={false}>Inactive</Radio>
-                </Radio.Group>
+            <div className={formStyles.group}>
+              <Form.Item name="role" label="Role in The Church">
+                <Select placeholder="Role" className={styles.input}>
+                  <Select.Option value="member">Member</Select.Option>
+                  <Select.Option value="leader">Leader</Select.Option>
+                  <Select.Option value="staff">Staff</Select.Option>
+                  <Select.Option value="admin">Admin</Select.Option>
+                </Select>
               </Form.Item>
             </div>
+            <Form.Item name="isActive" className={styles.radioContainer} label="Active Member">
+              <Radio.Group className={styles.radioGroup}>
+                <Radio value={true}>Active</Radio>
+                <Radio value={false}>Inactive</Radio>
+              </Radio.Group>
+            </Form.Item>
           </div>
         </div>
         <div

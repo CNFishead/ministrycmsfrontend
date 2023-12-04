@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import useFetchData from "@/state/useFetchData";
 import { useSelectedProfile } from "@/state/profile/profile";
+import useRemoveData from "@/state/useRemoveData";
 
 const Members = () => {
   const router = useRouter();
@@ -19,6 +20,10 @@ const Members = () => {
     url: `/member/${selectedProfile?.ministry?._id}`,
     key: "members",
     enabled: !!selectedProfile?.ministry?._id,
+  });
+
+  const { mutate: deleteMember } = useRemoveData({
+    queriesToInvalidate: ["members"],
   });
   return (
     <div className={styles.container}>
@@ -105,9 +110,9 @@ const Members = () => {
                   // location is an object containing the address city and state of the member
                   // return as a string with the city and state
                   // return all information that is not null or undefined
-                  return `${text?.address ? text?.address : ""} ${text.address2 ? text.address2 : ""} ${
-                    text.city ? `${text.city},` : ""
-                  } ${text.state ? text.state : ""} ${text.zipCode ? text.zipCode : ""}`.trim();
+                  return `${text?.address ?? ""} ${text?.address2 ?? ""} ${text?.city ? `${text?.city},` : ""} ${
+                    text?.state ?? ""
+                  } ${text?.zipCode ?? ""}`.trim();
                 },
               },
               {
@@ -116,9 +121,30 @@ const Members = () => {
                 key: "sex",
               },
               {
+                title: "Marital Status",
+                dataIndex: "maritalStatus",
+                key: "maritalStatus",
+              },
+              {
+                title: "# Ministries part of",
+                dataIndex: "numberOfMinistries",
+                key: "numberOfMinistries",
+                render: (text: any) => {
+                  return text?.length;
+                },
+              },
+              {
+                title: "Leader of Ministries",
+                dataIndex: "numberOfLeaderMinistries",
+                key: "numberOfLeaderMinistries",
+                render: (text: any) => {
+                  return text?.length;
+                },
+              },
+              {
                 title: "Role",
                 dataIndex: "role",
-                key: "role", 
+                key: "role",
               },
               {
                 title: "Birthday",
@@ -148,7 +174,7 @@ const Members = () => {
                           <FaEdit />
                         </Button>
                       </Link>
-                      <Button>
+                      <Button onClick={() => deleteMember({ url: `/member/${record._id}` })}>
                         <FaTrash />
                       </Button>
                     </div>
