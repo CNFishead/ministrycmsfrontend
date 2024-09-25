@@ -1,18 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import phoneNumber from '@/utils/phoneNumber';
-// states
-import { useUser } from '@/state/auth';
-import { useBillingData, useUpdateBillingData } from '@/state/billing/billing';
-// components
-import Error from '@/components/error/Error.component';
-// data
-import { states } from '@/data/states';
-import { countries } from '@/data/countries';
-
-import { Form, Input, Button, InputNumber, Skeleton, Select } from 'antd';
-import styles from './EditCreditCardViewForm.module.scss';
-// icons
-import { AiOutlineCreditCard } from 'react-icons/ai';
+import React from "react";
+import phoneNumber from "@/utils/phoneNumber";
+import { states } from "@/data/states";
+import { countries } from "@/data/countries";
+import { Form, Input, Button, InputNumber, Select } from "antd";
+import styles from "./EditCreditCardViewForm.module.scss";
+import { AiOutlineCreditCard } from "react-icons/ai";
 
 /**
  * @description - In this view, the user can edit their credit card information.
@@ -29,23 +21,19 @@ type Props = {
 
 const EditCreditCardForm = (props: Props) => {
   const [ccForm] = Form.useForm();
-  const { data: billingData, isError, error } = useBillingData();
-  const { mutate: updateBillingData, isLoading: updateIsLoading } = useUpdateBillingData();
-
+  // const { data: billingData, isError, error } = useBillingData();
+  // const { mutate: updateBillingData, isLoading: updateIsLoading } = useUpdateBillingData();
 
   const onFinish = (values: any) => {
-    updateBillingData(values);
+    // updateBillingData(values);
     props.closeModal();
   };
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>Payment Method</h1>
       <span className={styles.subtitle}>
-        {' '}
-        <AiOutlineCreditCard
-          style={{ fontSize: '17px', verticalAlign: 'middle' }}
-        />{' '}
-        Credit Card
+        {" "}
+        <AiOutlineCreditCard style={{ fontSize: "17px", verticalAlign: "middle" }} /> Credit Card
       </span>
 
       <Form
@@ -59,22 +47,24 @@ const EditCreditCardForm = (props: Props) => {
             <Form.Item
               name="ccnumber"
               label="Card Number"
-              rules={[{ required: true, message: 'Please input cc number!' }]}
+              rules={[{ required: true, message: "Please input cc number!" }]}
             >
               <Input
-                placeholder={billingData?._doc?.ccnumber || `No CC number on file`}
+                placeholder={
+                  // billingData?._doc?.ccnumber ||
+                  `No CC number on file`
+                }
               />
             </Form.Item>
             <Form.Item
               name="ccexp"
               label="Expiration Date"
-              rules={[
-                { required: true, message: 'Please input cc expiration date!' },
-              ]}
+              rules={[{ required: true, message: "Please input cc expiration date!" }]}
             >
               <Input
                 placeholder={
-                  billingData?._doc?.ccexp || `No expiration date on file`
+                  // billingData?._doc?.ccexp ||
+                  `No expiration date on file`
                 }
               />
             </Form.Item>
@@ -84,15 +74,15 @@ const EditCreditCardForm = (props: Props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input the CVV card number!',
+                  message: "Please input the CVV card number!",
                 },
               ]}
               tooltip="The CVV # is the 3 digits number on the back of your card."
             >
-              <Input/>
+              <Input />
             </Form.Item>
           </div>
-        </div>{' '}
+        </div>{" "}
         <div className={styles.group}>
           <div className={styles.side}>
             <Form.Item
@@ -101,7 +91,7 @@ const EditCreditCardForm = (props: Props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input the Fisrt Name on the card ',
+                  message: "Please input the Fisrt Name on the card ",
                 },
               ]}
             >
@@ -113,7 +103,7 @@ const EditCreditCardForm = (props: Props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input the Last Name on the card ',
+                  message: "Please input the Last Name on the card ",
                 },
               ]}
             >
@@ -126,11 +116,15 @@ const EditCreditCardForm = (props: Props) => {
             <Form.Item
               name="email"
               label="Billing Email"
-              rules={[
-                { required: true, message: 'Please input billing email' },
-              ]}
+              rules={[{ required: true, message: "Please input billing email" }]}
             >
-              <Input type="email" placeholder={billingData?._doc?.billingEmail || `No email on file`}/>
+              <Input
+                type="email"
+                placeholder={
+                  // billingData?._doc?.billingEmail ||
+                  `No email on file`
+                }
+              />
             </Form.Item>
             <Form.Item
               name="phone"
@@ -138,15 +132,15 @@ const EditCreditCardForm = (props: Props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input billing phone number',
+                  message: "Please input billing phone number",
                 },
               ]}
             >
               <InputNumber
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 controls={false}
                 formatter={(value: any) => phoneNumber(value)}
-                parser={(value: any) => value.replace(/[^\d]/g, '')}
+                parser={(value: any) => value.replace(/[^\d]/g, "")}
               />
             </Form.Item>
           </div>
@@ -154,28 +148,19 @@ const EditCreditCardForm = (props: Props) => {
         <Form.Item
           name="address"
           label="Billing Address"
-          rules={[{ required: true, message: 'Please input billing address' }]}
+          rules={[{ required: true, message: "Please input billing address" }]}
         >
           <Input />
         </Form.Item>
         <div className={styles.group}>
           <div className={styles.side}>
-            <Form.Item
-              name="city"
-              label="City"
-              rules={[
-                { required: true, message: 'Please input billing city!' },
-              ]}
-            >
+            <Form.Item name="city" label="City" rules={[{ required: true, message: "Please input billing city!" }]}>
               <Input />
             </Form.Item>
             <Form.Item name="state" label="State">
-            <Select placeholder="Select a state">
+              <Select placeholder="Select a state">
                 {states.map((state) => (
-                  <Select.Option
-                    key={state.abbreviation}
-                    value={state.abbreviation}
-                  >
+                  <Select.Option key={state.abbreviation} value={state.abbreviation}>
                     {state.abbreviation}
                   </Select.Option>
                 ))}
@@ -187,16 +172,11 @@ const EditCreditCardForm = (props: Props) => {
             <Form.Item
               name="country"
               label="Country"
-              rules={[
-                { required: true, message: 'Please input billing country!' },
-              ]}
+              rules={[{ required: true, message: "Please input billing country!" }]}
             >
-               <Select placeholder="Select a country">
+              <Select placeholder="Select a country">
                 {countries.map((country) => (
-                  <Select.Option
-                    key={country}
-                    value={country}
-                  >
+                  <Select.Option key={country} value={country}>
                     {country}
                   </Select.Option>
                 ))}
@@ -206,16 +186,14 @@ const EditCreditCardForm = (props: Props) => {
         </div>
         <div className={styles.buttons}>
           <Form.Item>
-            <Button
-              key="cancel"
-              style={{ margin: '0 8px' }}
-              danger
-              ghost
-              onClick={() => props.closeModal()}
-            >
+            <Button key="cancel" style={{ margin: "0 8px" }} danger ghost onClick={() => props.closeModal()}>
               Cancel
             </Button>
-            <Button type="primary" htmlType="submit" loading={updateIsLoading}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              // loading={updateIsLoading}
+            >
               Submit
             </Button>
           </Form.Item>

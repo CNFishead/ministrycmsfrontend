@@ -1,20 +1,10 @@
-import Error from '@/components/error/Error.component';
-import Loader from '@/components/loader/Loader.component';
-import { useNextPaymentDate } from '@/state/analytics/nextPaymentDate';
-// states
-import { useUser } from '@/state/auth';
-import {
-  useDownloadReceipt,
-  useReceiptData,
-} from '@/state/billing/receiptDetails';
-import axios from '@/utils/axios';
-import { Button, Col, Descriptions, Modal, Row, Skeleton } from 'antd';
-import moment from 'moment';
-import Link from 'next/link';
-import { useState } from 'react';
-import { AiOutlineDownload } from 'react-icons/ai';
+import Error from "@/components/error/Error.component";
+import Loader from "@/components/loader/Loader.component";
+import { useUser } from "@/state/auth";
+import { Descriptions, Modal, Skeleton } from "antd";
+import moment from "moment";
 
-import styles from './PaymentHistoryCard.module.scss';
+import styles from "./PaymentHistoryCard.module.scss";
 
 /**
  * @description - This component displays the user's current features. It is a card component that is used in the billing page.
@@ -27,76 +17,60 @@ import styles from './PaymentHistoryCard.module.scss';
 
 type Props = {};
 const PaymentHistoryCard = (props: Props) => {
-  const { data: paymentData, error, isLoading, isError } = useNextPaymentDate();
+  // const { data: paymentData, error, isLoading, isError } = useNextPaymentDate();
   const { data: loggedInData } = useUser();
-  const { data: receipts } = useReceiptData(loggedInData?.user?._id, '');
-  const { mutate: downloadReceipt, isLoading: downloadIsLoading } =
-    useDownloadReceipt();
+  // const { data: receipts } = useReceiptData(loggedInData?.user?._id, "");
+  // const { mutate: downloadReceipt, isLoading: downloadIsLoading } = useDownloadReceipt();
 
-  if (isLoading) return <Skeleton active />;
-  if (isError) return <Error error={error} />;
+  // if (isLoading) return <Skeleton active />;
+  // if (isError) return <Error error={error} />;
 
-  const DateTimeFormat = new Intl.DateTimeFormat('en', {
-    year: 'numeric',
-    month: 'long',
-    day: '2-digit',
+  const DateTimeFormat = new Intl.DateTimeFormat("en", {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
   });
 
   return (
     <div className={styles.container}>
-      <Modal open={downloadIsLoading} footer={null} closable={false} centered>
+      <Modal
+        // open={downloadIsLoading}
+        footer={null}
+        closable={false}
+        centered
+      >
         <Loader title="Downloading receipt..." />
       </Modal>
 
-      {receipts?.receipts?.map((receipt: any, index: number) => {
+      {/* {receipts?.receipts?.map((receipt: any, index: number) => {
         return (
           <div className={styles.receipt} key={receipt._id}>
             <div className={styles.details}>
               <div className={styles.date}>
                 <div>
-                  <h2>
-                    {receipt.type === 'sale'
-                      ? 'purchased'
-                      : `${receipt.type}ed`}{' '}
-                    on
-                  </h2>
-                  <h1>
-                    {` ${moment(receipt.billedAt).format('MM/DD/YYYY')}` ||
-                      'N/A'}
-                  </h1>
+                  <h2>{receipt.type === "sale" ? "purchased" : `${receipt.type}ed`} on</h2>
+                  <h1>{` ${moment(receipt.billedAt).format("MM/DD/YYYY")}` || "N/A"}</h1>
                 </div>
               </div>
-              <Descriptions
-                size="small"
-                className={styles.paymentInfoContainer}
-                contentStyle={{ minWidth: '100px' }}
-              >
-                <Descriptions.Item label="Transaction ID">
-                  {receipt.transactionId}
-                </Descriptions.Item>
-                <Descriptions.Item label="Item">
-                  {receipt.memo}
-                </Descriptions.Item>
-                <Descriptions.Item label="Payment Method">
-                  {receipt.paymentMethod}
-                </Descriptions.Item>
-                <Descriptions.Item label="Amount Paid">
-                  ${receipt.amount.toFixed(2)}
-                </Descriptions.Item>
+              <Descriptions size="small" className={styles.paymentInfoContainer} contentStyle={{ minWidth: "100px" }}>
+                <Descriptions.Item label="Transaction ID">{receipt.transactionId}</Descriptions.Item>
+                <Descriptions.Item label="Item">{receipt.memo}</Descriptions.Item>
+                <Descriptions.Item label="Payment Method">{receipt.paymentMethod}</Descriptions.Item>
+                <Descriptions.Item label="Amount Paid">${receipt.amount.toFixed(2)}</Descriptions.Item>
               </Descriptions>
 
               <div className={styles.download}>
-                {/* <Button
+                <Button
                   type="text"
                   onClick={() => downloadReceipt(receipt._id)}
                 >
                   <AiOutlineDownload />
-                </Button> */}
+                </Button>
               </div>
             </div>
           </div>
         );
-      })}
+      })} */}
     </div>
   );
 };

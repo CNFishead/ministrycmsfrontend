@@ -69,7 +69,7 @@
   }
 
   &.selected {
-    background-color: var(--primary); !important;
+    background-color: var(--primary) !important;
     .header {
       display: flex;
       align-items: center;
@@ -86,7 +86,7 @@
     .title {
       color: white;
       span {
-        background-color: var(--primary-dark);-dark-blue;
+        background-color: var(--primary-dark-blue);
         color: white;
       }
     }

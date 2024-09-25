@@ -20,12 +20,13 @@ const updateFormData = async (url: string, formData: any) => {
 export default (options: { queriesToInvalidate?: string[]; successMessage?: string; redirectUrl?: string }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  return useMutation((data: { url: string; formData?: any }) => updateFormData(data.url, data.formData), {
+  return useMutation({
+    mutationFn: (data: { url: string; formData?: any }) => updateFormData(data.url, data.formData),
     onSuccess: (data: any) => {
       console.log(options.queriesToInvalidate);
       message.success(options.successMessage || "Data updated successfully");
       options.queriesToInvalidate?.forEach((query: string) => {
-        queryClient.invalidateQueries([query]);
+        queryClient.invalidateQueries([query] as any);
       });
       if (options.redirectUrl) {
         router.push(options.redirectUrl);

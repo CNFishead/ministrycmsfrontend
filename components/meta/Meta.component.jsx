@@ -1,7 +1,13 @@
 import React from "react";
 import Head from "next/head";
 
-const Meta = ({ title, description, keywords, url, image }) => (
+const Meta = ({
+  title = "Shepherd's CRM",
+  description = "Shepherd's CRM is a platform for churches to manage their members, events, and finances. All in one convenient place.",
+  keywords = "church, crm, members, events, finances, church management",
+  url = "https://shepherds-crm.vercel.app",
+  image = "/logo512.png",
+}) => (
   <Head>
     {/* Favicon */}
     <link rel="icon" href="/favicon.ico" />
@@ -26,13 +32,5 @@ const Meta = ({ title, description, keywords, url, image }) => (
     {/* VideoJs CSS link */}
   </Head>
 );
-
-Meta.defaultProps = {
-  title: "Shepherd's CRM",
-  description: "Shepherd's CRM is a platform for churches to manage their members, events, and finances. All in one convenient place.",
-  keywords: "church, crm, members, events, finances, church management",
-  url: "https://shepherds-crm.vercel.app",
-  image: "/logo512.png",
-};
 
 export default Meta;

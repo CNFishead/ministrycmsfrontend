@@ -1,9 +1,6 @@
-import { useEffect, useState } from 'react';
 import styles from './TotalCard.module.scss';
 import Link from 'next/link';
-import { Statistic, Skeleton } from 'antd';
-import { useTotalViews } from '@/state/analytics/userTotalViews';
-import { useTotalLikes } from '@/state/analytics/userTotalLikes';
+import { Statistic, Skeleton } from 'antd'; 
 import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 import Error from '@/components/error/Error.component';
 

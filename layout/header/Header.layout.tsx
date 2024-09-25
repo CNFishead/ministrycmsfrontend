@@ -6,8 +6,8 @@ import Link from "next/link";
 import { useUser, logout } from "@/state/auth";
 import { BiLogOutCircle } from "react-icons/bi";
 import { ReactNode } from "react";
-import { useSelectedProfile } from "@/state/profile/profile";
 import Notifications from "./components/Notifications.component";
+import useFetchData from "@/state/useFetchData";
 
 type Props = {
   pages?: Array<{ title: string; link?: string; icon?: ReactNode }>;
@@ -16,9 +16,11 @@ type Props = {
 const Header = (props: Props) => {
   const toggleSideBar = useLayoutStore((state) => state.toggleSideBar);
   const { data: loggedInData } = useUser();
-
-  const { data: selectedProfile } = useSelectedProfile();
-
+  const { data: selectedProfile } = useFetchData({
+    url: `/ministry/ loggedInData.user?.ministry?._id}`,
+    key: "selectedProfile",
+    enabled: !!loggedInData?.user?.ministry?._id,
+  });
   return (
     <div className={styles.header}>
       <div className={styles.headerLeft}>

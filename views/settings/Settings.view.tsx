@@ -1,31 +1,26 @@
-import Error from '@/components/error/Error.component';
-import Loader from '@/components/loader/Loader.component';
-import SaveButton from '@/components/saveButton/SaveButton.component';
-import Container from '@/layout/container/Container.layout';
-import { useUpdateUser, useUser, useUserDetails } from '@/state/auth';
-import { useWarnIfUnsavedChanges } from '@/utils/useWarnIfUnsavedChanges';
-import { Button, Form } from 'antd';
-import React, { useEffect, useState } from 'react';
+import Error from "@/components/error/Error.component";
+import Loader from "@/components/loader/Loader.component";
+import SaveButton from "@/components/saveButton/SaveButton.component";
+import Container from "@/layout/container/Container.layout";
+import { useUpdateUser, useUser, useUserDetails } from "@/state/auth";
+import { useWarnIfUnsavedChanges } from "@/utils/useWarnIfUnsavedChanges";
+import { Button, Form } from "antd";
+import React, { useEffect, useState } from "react";
 
-import SettingsForm from './components/settingsForm/SettingsForm.component';
-import styles from './Settings.module.scss';
+import SettingsForm from "./components/settingsForm/SettingsForm.component";
+import styles from "./Settings.module.scss";
 
 type Props = {};
 
 const SettingsView = (props: Props) => {
   const { data: loggedInData, error, isLoading } = useUser();
-  const {
-    data: userDetails,
-    isError: userError,
-    error: userErrorDetails,
-    isLoading: userLoadingDetails,
-  } = useUserDetails(loggedInData?.user._id);
+  const { data: userDetails, isError: userError } = useUserDetails(loggedInData?.user._id);
   // const { mutate: updateUser, isLoading: userUpdateIsLoading } =
   //   useUpdateUser();
   const [form] = Form.useForm();
   const [unsaved, setUnsaved] = useState(false);
   useWarnIfUnsavedChanges(unsaved, () => {
-    return confirm('Warning! You have unsaved changes.');
+    return confirm("Warning! You have unsaved changes.");
   });
 
   const onFinish = (values: any) => {
@@ -35,14 +30,11 @@ const SettingsView = (props: Props) => {
 
   useEffect(() => {
     form.setFieldsValue({
-      firstName: userDetails?.firstName,
-      lastName: userDetails?.lastName,
-      email: userDetails?.email,
-      phoneNumber: userDetails?.phoneNumber,
-      sex: userDetails?.sex,
-      saveAllVideos: userDetails?.saveAllVideos,
-      unsubscribeFromEmails: userDetails?.unsubscribeFromEmails,
-      hiddenChannel: userDetails?.hiddenChannel,
+      firstName: userDetails?.user?.firstName,
+      lastName: userDetails?.user?.lastName,
+      email: userDetails?.user?.email,
+      phoneNumber: userDetails?.user?.phoneNumber,
+      sex: userDetails?.user?.sex,
     });
   }, [userDetails]);
 
@@ -58,11 +50,9 @@ const SettingsView = (props: Props) => {
           setUnsaved(true);
         }}
       >
-        <Container title="Settings">
-          {isLoading ? <Loader /> : <SettingsForm />}
-        </Container>
-        <SaveButton 
-        // isLoading={userUpdateIsLoading} 
+        <Container title="Settings">{isLoading ? <Loader /> : <SettingsForm />}</Container>
+        <SaveButton
+        // isLoading={userUpdateIsLoading}
         />
       </Form>
     </div>

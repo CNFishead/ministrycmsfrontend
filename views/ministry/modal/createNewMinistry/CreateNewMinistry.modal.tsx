@@ -5,15 +5,10 @@ import selectableMinistryTypes from "@/data/selectableMinistryTypes";
 import UserItem from "@/components/userItem/UserItem.component";
 import PhotoUpload from "@/components/photoUpload/PhotoUpload.component";
 import { FaSave } from "react-icons/fa";
-import Ministry from "@/types/Ministry";
-import User from "@/types/User";
 import useFetchData from "@/state/useFetchData";
-import { useSelectedProfile } from "@/state/profile/profile";
-import { Row } from "antd/lib";
 import MemberType from "@/types/MemberType";
 import usePostData from "@/state/usePostData";
-import { QueryClient } from "@tanstack/react-query";
-import useFetchMembers from "@/state/members/useFetchMembers";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   open: boolean;
@@ -21,20 +16,21 @@ interface Props {
 }
 const CreateNewMinistry = ({ open, setOpen }: Props) => {
   const [form] = Form.useForm();
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
+  const { data: selectedProfile } = queryClient.getQueryData("selectedProfile" as any) as any;
+
   const [leaderSearch, setLeaderSearch] = React.useState("");
   const selectableOptions = selectableMinistryTypes();
-  const { data: selectedProfile } = useSelectedProfile();
   const { data: membersListData, isLoading: loading } = useFetchData({
     url: `/member/${selectedProfile?.ministry?._id}`,
     key: "membersList",
     enabled: !!selectedProfile?.ministry?._id,
-    keyword: leaderSearch
+    keyword: leaderSearch,
   });
   // console.log(leaderSearch);
   const { mutate: createNewMinistry } = usePostData({
-    // url: `/ministry/${selectedProfile?.ministry?._id}`,
-    // key: "ministryCreate",
+    url: `/ministry/${selectedProfile?.ministry?._id}`,
+    key: "ministryCreate",
     successMessage: "Ministry created successfully",
     queriesToInvalidate: ["ministryList"],
   });

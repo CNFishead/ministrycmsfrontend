@@ -9,23 +9,19 @@ import UserItem from "@/components/userItem/UserItem.component";
 import Error from "@/components/error/Error.component";
 import { MdError } from "react-icons/md";
 import selectableMinistryTypes from "@/data/selectableMinistryTypes";
-import { useUser } from "@/state/auth";
-import { useSelectedProfile } from "@/state/profile/profile";
+import { useUser } from "@/state/auth"; 
+import useFetchData from "@/state/useFetchData";
 
 const MinistryDetails = () => {
   const selectableOptions = selectableMinistryTypes();
   const [form] = Form.useForm();
-  // const dispatch = useDispatch();
-
-  // const {
-  //   mainMinistry: { ministry, loading, error },
-  // } = useSelector((state: RootState) => state.ministry);
-
-  // const { user: loggedInUser } = useSelector((state: RootState) => state.auth);
-
   const { data: loggedInUser } = useUser();
-  const { data: selectedProfile, isLoading: loading, isError, error } = useSelectedProfile();
 
+  const { data: selectedProfile, isLoading: loading, isError, error } = useFetchData({
+    url: `/ministry/ loggedInData.user?.ministry?._id}`,
+    key: "selectedProfile",
+    enabled: !!loggedInUser?.user?.ministry?._id,
+  });
   React.useEffect(() => {
     form.setFieldsValue({ ...selectedProfile?.ministry });
   }, [selectedProfile]);

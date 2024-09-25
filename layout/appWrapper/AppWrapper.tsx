@@ -1,6 +1,6 @@
 import { useUser } from "@/state/auth";
-import { useSelectedProfile } from "@/state/profile/profile";
 import { useSocketStore } from "@/state/socket";
+import useFetchData from "@/state/useFetchData";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import Script from "next/script";
@@ -16,9 +16,11 @@ const AppWrapper = (props: Props) => {
   const router = useRouter();
   const token = router.query.token as string;
   const { data: loggedInData, isLoading: userIsLoading } = useUser(token);
-
-  useSelectedProfile(loggedInData?.user && loggedInData.user?.ministry?._id);
-
+  const { data: selectedProfile, isLoading: profileIsLoading } = useFetchData({
+    url: `/ministry/${loggedInData?.user?.ministry?._id}`,
+    key: "selectedProfile",
+    enabled: !!loggedInData?.user?.ministry?._id,
+  });
   //Set up socket connection
   const { socket, isConnecting, setSocket, setIsConnecting } = useSocketStore((state) => state);
 
@@ -43,7 +45,7 @@ const AppWrapper = (props: Props) => {
       // Listen for user updates
       socket.emit("setup", loggedInData?.user);
       socket.on("updateUser", () => {
-        queryClient.invalidateQueries(["user"]);
+        queryClient.invalidateQueries(["user"] as any);
       });
     }
 

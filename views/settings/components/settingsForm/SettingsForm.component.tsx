@@ -1,4 +1,3 @@
-import { useUpdateUser, useUser } from '@/state/auth';
 import phoneNumber from '@/utils/phoneNumber';
 import {
   Button,
@@ -10,7 +9,6 @@ import {
   Radio,
   Switch,
 } from 'antd';
-import { useEffect } from 'react';
 
 import styles from './SettingsForm.module.scss';
 

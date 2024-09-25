@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, InputNumber, Select } from 'antd';
-import phoneNumber from '@/utils/phoneNumber';
-//states
-import { useBillingData, useUpdateBillingData } from '@/state/billing/billing';
-// data
-import { states } from '@/data/states';
-import { countries } from '@/data/countries';
+import React, { useState, useEffect } from "react";
+import { Form, Input, Button, InputNumber, Select } from "antd";
+import phoneNumber from "@/utils/phoneNumber";
+import { states } from "@/data/states";
+import { countries } from "@/data/countries";
 
-import { AiOutlineBank } from 'react-icons/ai';
-import styles from './EditAchViewForm.module.scss';
+import { AiOutlineBank } from "react-icons/ai";
+import styles from "./EditAchViewForm.module.scss";
 
 /**
  * @description - In this view, the user can edit their ACH information.
@@ -24,13 +21,13 @@ type Props = {
 };
 
 const EditAchCardForm = (props: Props) => {
-  const { data: billingData, isLoading, isError, error } = useBillingData();
-  const { mutate: updateBillingData, isLoading: updateIsLoading } =
-    useUpdateBillingData();
+  // const { data: billingData, isLoading, isError, error } = useBillingData();
+  // const { mutate: updateBillingData, isLoading: updateIsLoading } =
+  //   useUpdateBillingData();
   const [isCC, setIsCC] = useState(true);
 
   const onFinish = (values: any) => {
-    updateBillingData(values);
+    // updateBillingData(values);
     props.closeModal();
   };
 
@@ -40,10 +37,10 @@ const EditAchCardForm = (props: Props) => {
       <span className={styles.subtitle}>
         <AiOutlineBank
           style={{
-            fontSize: '18px',
-            verticalAlign: 'middle',
+            fontSize: "18px",
+            verticalAlign: "middle",
           }}
-        />{' '}
+        />{" "}
         Bank/ACH
       </span>
       <Form layout="vertical" autoComplete="off" onFinish={onFinish}>
@@ -52,26 +49,24 @@ const EditAchCardForm = (props: Props) => {
             <Form.Item
               name="checkname"
               label="Account Name"
-              rules={[
-                { required: true, message: 'Please input ACH account name!' },
-              ]}
+              rules={[{ required: true, message: "Please input ACH account name!" }]}
             >
               <Input
                 placeholder={
-                  billingData?._doc?.checkname || `No account name on file`
+                  // billingData?._doc?.checkname ||
+                  `No account name on file`
                 }
               />
             </Form.Item>
             <Form.Item
               name="checkaccount"
               label="Account Number"
-              rules={[
-                { required: true, message: 'Please input ACH account number!' },
-              ]}
+              rules={[{ required: true, message: "Please input ACH account number!" }]}
             >
               <Input
                 placeholder={
-                  billingData?._doc?.checkaccount || `No account # on file`
+                  // billingData?._doc?.checkaccount ||
+                  `No account # on file`
                 }
               />
             </Form.Item>
@@ -81,18 +76,19 @@ const EditAchCardForm = (props: Props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input account ABA/Rounting number!',
+                  message: "Please input account ABA/Rounting number!",
                 },
               ]}
             >
               <Input
                 placeholder={
-                  billingData?._doc?.checkaba || `No ABA/Rounting # on file`
+                  // billingData?._doc?.checkaba ||
+                  `No ABA/Rounting # on file`
                 }
               />
             </Form.Item>
           </div>
-        </div>{' '}
+        </div>{" "}
         <div className={styles.group}>
           <div className={styles.side}>
             <Form.Item
@@ -101,7 +97,7 @@ const EditAchCardForm = (props: Props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input first name!',
+                  message: "Please input first name!",
                 },
               ]}
             >
@@ -113,7 +109,7 @@ const EditAchCardForm = (props: Props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please account ABA/Rounting number!',
+                  message: "Please account ABA/Rounting number!",
                 },
               ]}
             >
@@ -129,7 +125,7 @@ const EditAchCardForm = (props: Props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input billing email!',
+                  message: "Please input billing email!",
                 },
               ]}
             >
@@ -141,15 +137,15 @@ const EditAchCardForm = (props: Props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input billing phone number',
+                  message: "Please input billing phone number",
                 },
               ]}
             >
               <InputNumber
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 controls={false}
                 formatter={(value: any) => phoneNumber(value)}
-                parser={(value: any) => value.replace(/[^\d]/g, '')}
+                parser={(value: any) => value.replace(/[^\d]/g, "")}
               />
             </Form.Item>
           </div>
@@ -160,7 +156,7 @@ const EditAchCardForm = (props: Props) => {
           rules={[
             {
               required: true,
-              message: 'Please input billing address!',
+              message: "Please input billing address!",
             },
           ]}
         >
@@ -168,22 +164,13 @@ const EditAchCardForm = (props: Props) => {
         </Form.Item>
         <div className={styles.group}>
           <div className={styles.side}>
-            <Form.Item
-              name="city"
-              label="City"
-              rules={[
-                { required: true, message: 'Please input billing city!' },
-              ]}
-            >
+            <Form.Item name="city" label="City" rules={[{ required: true, message: "Please input billing city!" }]}>
               <Input />
             </Form.Item>
             <Form.Item name="state" label="State">
               <Select placeholder="Select a state">
                 {states.map((state) => (
-                  <Select.Option
-                    key={state.abbreviation}
-                    value={state.abbreviation}
-                  >
+                  <Select.Option key={state.abbreviation} value={state.abbreviation}>
                     {state.abbreviation}
                   </Select.Option>
                 ))}
@@ -195,9 +182,7 @@ const EditAchCardForm = (props: Props) => {
             <Form.Item
               name="country"
               label="Country"
-              rules={[
-                { required: true, message: 'Please input billing country!' },
-              ]}
+              rules={[{ required: true, message: "Please input billing country!" }]}
             >
               <Select placeholder="Select a country">
                 {countries.map((country) => (
@@ -211,16 +196,16 @@ const EditAchCardForm = (props: Props) => {
         </div>
         <div className={styles.buttons}>
           <Form.Item>
-            <Button
-              key="cancel"
-              style={{ margin: '0 8px' }}
-              danger
-              ghost
-              onClick={() => props.closeModal()}
-            >
+            <Button key="cancel" style={{ margin: "0 8px" }} danger ghost onClick={() => props.closeModal()}>
               Cancel
             </Button>
-            <Button type="primary" htmlType="submit" loading={updateIsLoading}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              // loading={
+              // updateIsLoading
+              // }
+            >
               Submit
             </Button>
           </Form.Item>

@@ -136,7 +136,7 @@ const SearchWrapper = (props: Props) => {
           rootClassName={styles.search}
           size="large"
           enterButton
-          bordered={false}
+          variant='outlined'
           value={searchText}
         />
         <div className={styles.buttonContainer}>

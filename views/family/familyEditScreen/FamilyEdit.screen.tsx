@@ -10,9 +10,9 @@ import useFetchData from "@/state/useFetchData";
 import useUpdateData from "@/state/useUpdateData";
 import { useUser } from "@/state/auth";
 import Error from "@/components/error/Error.component";
-import { useSelectedProfile } from "@/state/profile/profile";
 import { useRouter } from "next/router";
 import AddMemberModal from "./modal/AddMemberModal.modal";
+import { useQueryClient } from "@tanstack/react-query";
 
 /**
  * @description - FamilyEditScreen component, renders the family edit screen, this is the screen that is shown when a user clicks on a family item
@@ -50,7 +50,11 @@ const FamilyEdit = () => {
     enabled: !!id,
   });
   const { mutate: updateFamily } = useUpdateData({ queriesToInvalidate: ["selectedFamily"] });
-  const { data: selectedProfile } = useSelectedProfile();
+  const { data: selectedProfile, isLoading: profileIsLoading } = useFetchData({
+    url: `/ministry/${loggedInData.user?.ministry?._id}`,
+    key: "selectedProfile",
+    enabled: !!loggedInData?.user?.ministry?._id,
+  });
   const { data: membersListData, isLoading: loading } = useFetchData({
     url: `/member/${selectedProfile?.ministry?._id}`,
     key: "members",

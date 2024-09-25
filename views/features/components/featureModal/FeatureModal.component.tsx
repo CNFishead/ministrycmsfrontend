@@ -1,13 +1,12 @@
-import { Button, Modal } from 'antd';
-import styles from './FeatureModal.module.scss';
-import { useState } from 'react';
-import { useUser } from '@/state/auth';
-import {
-  useAllFeatures,
-  useUpdateUserFeatures,
-} from '@/state/features/features';
-import Loader from '@/components/loader/Loader.component';
-import { getPrice } from '@/utils/getPrice';
+import { Modal } from "antd";
+import styles from "./FeatureModal.module.scss";
+import { useUser } from "@/state/auth";
+// import {
+//   useAllFeatures,
+//   useUpdateUserFeatures,
+// } from '@/state/features/features';
+import Loader from "@/components/loader/Loader.component";
+import { getPrice } from "@/utils/getPrice";
 
 type Props = {
   selectedFeatures: {
@@ -24,43 +23,40 @@ type Props = {
 
 const FeatureModal = (props: Props) => {
   const text = props.hasFeature
-    ? 'Are you sure you want to remove this feature?'
-    : 'Are you sure you want to add these features?';
+    ? "Are you sure you want to remove this feature?"
+    : "Are you sure you want to add these features?";
 
   const { data: loggedInData } = useUser();
-  const { data: featuresData } = useAllFeatures();
-  const { mutate: updateUserFeatures, isLoading: updateIsLoading } =
-    useUpdateUserFeatures(() => {
-      props.setSelectedFeatures && props.setSelectedFeatures([]);
-      props.setOpen(false);
-    });
+  // const { data: featuresData } = useAllFeatures();
+  // const { mutate: updateUserFeatures, isLoading: updateIsLoading } = useUpdateUserFeatures(() => {
+  //   props.setSelectedFeatures && props.setSelectedFeatures([]);
+  //   props.setOpen(false);
+  // });
 
   return (
     <Modal
       className={styles.container}
       open={props.open}
-      okText={props.hasFeature ? 'Confirm Remove' : 'Confirm Add'}
+      okText={props.hasFeature ? "Confirm Remove" : "Confirm Add"}
       okButtonProps={{
         danger: props.hasFeature,
-        style: updateIsLoading ? { display: 'none' } : {},
+        // style: updateIsLoading ? { display: "none" } : {},
       }}
-      cancelButtonProps={{ style: updateIsLoading ? { display: 'none' } : {} }}
+      cancelButtonProps={
+        {
+          // style: updateIsLoading ? { display: "none" } : {}
+        }
+      }
       onCancel={() => props.setOpen(false)}
       onOk={() => {
-        updateUserFeatures(
-          props.hasFeature
-            ? loggedInData.user.features.filter(
-                (f: any) =>
-                  !props.selectedFeatures.map((f: any) => f._id).includes(f)
-              )
-            : [
-                ...loggedInData.user.features,
-                ...props.selectedFeatures.map((f) => f._id),
-              ]
-        );
+        // updateUserFeatures(
+        //   props.hasFeature
+        //     ? loggedInData.user.features.filter((f: any) => !props.selectedFeatures.map((f: any) => f._id).includes(f))
+        //     : [...loggedInData.user.features, ...props.selectedFeatures.map((f) => f._id)]
+        // );
       }}
     >
-      {updateIsLoading ? (
+      {/* {updateIsLoading ? (
         <div>
           <Loader title="Please wait while we make those changes" />
         </div>
@@ -70,9 +66,7 @@ const FeatureModal = (props: Props) => {
             <h1 className={styles.text}>{text}</h1>
           </div>
           {props.selectedFeatures.map((f) => (
-            <div
-              className={`${styles.feature} ${f.price < 0 && styles.discount}`}
-            >
+            <div className={`${styles.feature} ${f.price < 0 && styles.discount}`}>
               <h1 className={styles.title}>{f.name}</h1>
               <p className={styles.description}>{f.description}</p>
               <h1 className={styles.price}>${f.price}</h1>
@@ -80,24 +74,20 @@ const FeatureModal = (props: Props) => {
           ))}
 
           <h1 className={styles.priceDiff}>
-            Your monthly price will be changed to{' '}
+            Your monthly price will be changed to{" "}
             <span>
               $
               {!props.hasFeature
                 ? getPrice(
                     [
-                      ...featuresData?.allFeatures.filter((f: any) =>
-                        loggedInData.user.features.includes(f._id)
-                      ),
+                      ...featuresData?.allFeatures.filter((f: any) => loggedInData.user.features.includes(f._id)),
                       ...props.selectedFeatures,
                     ],
                     loggedInData.user
                   )
                 : (
                     getPrice(
-                      featuresData?.allFeatures.filter((f: any) =>
-                        loggedInData.user.features.includes(f._id)
-                      ),
+                      featuresData?.allFeatures.filter((f: any) => loggedInData.user.features.includes(f._id)),
                       loggedInData.user
                     ) -
                     getPrice(props.selectedFeatures, loggedInData.user, {
@@ -107,7 +97,7 @@ const FeatureModal = (props: Props) => {
             </span>
           </h1>
         </>
-      )}
+      )} */}
     </Modal>
   );
 };

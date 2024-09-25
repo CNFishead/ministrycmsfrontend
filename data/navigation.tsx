@@ -41,18 +41,12 @@ export const navigation = (options?: any) => {
           title: "Staff",
           link: "/staff",
           icon: <BsFillPeopleFill />,
-          sub_links: {
-            new_staff: {
-              title: "New Staff",
-              link: "/staff/new",
-              icon: (
-                <>
-                  <AiOutlinePlus />
-                  <BsFillPeopleFill />
-                </>
-              ),
-            },
-          },
+          sub_links: {},
+        },
+        events: {
+          title: "Events",
+          link: "/events",
+          icon: <BsBroadcastPin />,
         },
       },
       hidden: options?.user ? false : true,

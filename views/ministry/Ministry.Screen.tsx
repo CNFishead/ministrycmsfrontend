@@ -1,21 +1,27 @@
 import React from "react";
 import styles from "./Ministry.module.scss";
 import SearchWrapper from "@/layout/searchWrapper/SearchWrapper.layout";
-import { AiOutlinePlus, AiOutlineUpload } from "react-icons/ai";
-import CreateNewMinistry from "./modal/createNewMinistry/CreateNewMinistry.modal";
+import { AiOutlinePlus } from "react-icons/ai";
 import useFetchData from "@/state/useFetchData";
-import { useSelectedProfile } from "@/state/profile/profile";
-import { Avatar, Button, Skeleton, Table, Modal } from "antd";
-import Ministry from "@/types/Ministry";
+import { Avatar, Button, Table, Modal } from "antd";
+import { default as MinistryType } from "@/types/Ministry";
 import Link from "next/link";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import useRemoveData from "@/state/useRemoveData";
 import { useRouter } from "next/router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useUser } from "@/state/auth";
 
 const Ministry = () => {
   const [modalOpen, setModalOpen] = React.useState(false);
   const router = useRouter();
-  const { data: selectedProfile } = useSelectedProfile();
+  const { data: loggedInData } = useUser();
+  const { data: selectedProfile, isLoading: profileIsLoading } = useFetchData({
+    url: `/ministry/${loggedInData.user?.ministry?._id}`,
+    key: "selectedProfile",
+    enabled: !!loggedInData?.user?.ministry?._id,
+  });
+
   const {
     data: ministryData,
     isFetching,
@@ -55,7 +61,7 @@ const Ministry = () => {
             dataSource={ministryData?.ministries}
             loading={loading}
             size="small"
-            rowKey={(record: Ministry) => record._id}
+            rowKey={(record: MinistryType) => record._id}
             columns={[
               {
                 title: "Ministry Name",
@@ -66,7 +72,7 @@ const Ministry = () => {
                 title: "# of Members",
                 dataIndex: "members",
                 key: "members",
-                render: (text: string, record: Ministry) => {
+                render: (text: string, record: MinistryType) => {
                   return <span>{record.members?.length}</span>;
                 },
               },
@@ -74,7 +80,7 @@ const Ministry = () => {
                 title: "Ministry Leader",
                 dataIndex: "leader",
                 key: "leader",
-                render: (text: string, record: Ministry) => {
+                render: (text: string, record: MinistryType) => {
                   return (
                     <Link href={`/members/edit/${record.leader?._id}`}>
                       <div className={styles.leader}>
@@ -89,7 +95,7 @@ const Ministry = () => {
                 title: "Actions",
                 dataIndex: "actions",
                 key: "actions",
-                render: (text: string, record: Ministry) => {
+                render: (text: string, record: MinistryType) => {
                   return (
                     <div className={styles.actions}>
                       <Link href={`/ministries/${record._id}`}>

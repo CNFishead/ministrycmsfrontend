@@ -9,6 +9,7 @@ import AppWrapper from "@/layout/appWrapper/AppWrapper";
 import NProgress from "nprogress"; //nprogress module
 import Router from "next/router"; //nprogress module
 import { useEffect } from "react";
+import ThemeOveride from "@/data/theme.json";
 
 const queryClient = new QueryClient();
 
@@ -28,22 +29,14 @@ export default function App({ Component, pageProps }: AppProps) {
       trickleSpeed: 800,
     });
   }, []);
-  console.log(`App started in ${process.env.NODE_ENV} mode, with ${process.env.API_URL} as API_URL`);
   return (
     <QueryClientProvider client={queryClient}>
-      <ConfigProvider
-        theme={{
-          token: {
-            colorPrimary: "rgb(60, 98, 85)",
-            colorText: "rgb(92, 138, 122)",
-          },
-        }}
-      >
+      <ConfigProvider theme={{ ...ThemeOveride }}>
         <AppWrapper>
           <Component {...pageProps} />
         </AppWrapper>
       </ConfigProvider>
-      <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+      <ReactQueryDevtools initialIsOpen={false} position="bottom" />
     </QueryClientProvider>
   );
 }

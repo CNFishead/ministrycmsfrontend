@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "@/utils/axios";
-import { useSearchStore } from "./search/search";
+import { useSearchStore as store } from "./search/search";
+import decryptData from "@/utils/decryptData";
 
-//query to retrieve user videos
-export const fetchData = async (options?: {
+const fetchData = async (options?: {
   url?: string;
   defaultKeyword?: string;
   defaultPageNumber?: number;
@@ -11,25 +11,28 @@ export const fetchData = async (options?: {
   defaultFilter?: string;
   defaultSort?: string;
 }) => {
-  const keyword = options?.defaultKeyword ?? useSearchStore.getState().search.toLowerCase();
-  const pageNumber = options?.defaultPageNumber ?? useSearchStore.getState().pageNumber;
-  const pageLimit = options?.defaultPageLimit ?? useSearchStore.getState().pageLimit;
-  const filter = options?.defaultFilter ?? useSearchStore.getState().filter;
-  const sort = options?.defaultSort ?? useSearchStore.getState().sort;
-  const setNumberPages = useSearchStore.getState().setNumberPages;
-  // console.log(filter);
+  const keyword = options?.defaultKeyword || store.getState().search;
+  const pageNumber = options?.defaultPageNumber || store.getState().pageNumber;
+  const pageLimit = options?.defaultPageLimit || store.getState().pageLimit;
+
+  // if there is a default filter, and a store filter, we need to use both, otherwise we can use the values provided
+  const filter = `${options?.defaultFilter}${store.getState().filter ? `,${store.getState().filter}` : ""}`;
+  // const filter = options?.defaultFilter || store.getState().filter;
+  const sort = options?.defaultSort || store.getState().sort;
 
   const { data } = await axios.get(
     `${options?.url}?keyword=${keyword}&pageNumber=${pageNumber}&limit=${pageLimit}&filterOptions=${filter}&sortBy=${sort}`
   );
-
-  // data should contain a property pages, which is the number of pages, which we can pass to zustand's setNumberPages
-  setNumberPages(data?.pages);
+  // if the data.payload is a string, attempt to decrypt it
+  if (typeof data.payload === "string") {
+    data.payload = JSON.parse(decryptData(data.payload));
+    return data;
+  }
   return data;
 };
 
 /**
- * @description - custom hook to retrieve user videos from the api
+ * @description - custom hook to retrieve information from api
  * @param keyword - search keyword
  * @param pageNumber - page number, used for pagination
  * @param onSuccess  - callback function to be called on success
@@ -41,7 +44,7 @@ export const fetchData = async (options?: {
  * @since 1.0
  */
 export default (options?: {
-  key: string;
+  key: string | string[];
   url?: string;
   enabled?: boolean;
   keyword?: string;
@@ -49,13 +52,17 @@ export default (options?: {
   pageLimit?: number;
   filter?: string;
   sort?: string;
-  // onSuccess is a callback function that will be called on success, to do something with the data
-  onSuccess?: (data: any) => void;
-  onError?: (error: any) => void;
+  refetchOnWindowFocus?: boolean;
 }) => {
-  const query = useQuery(
-    [options?.key, options?.keyword],
-    () =>
+  const key =
+    typeof options?.key === "string"
+      ? [options?.key]
+      : // if its an array, remove the array, return both elements as separate strings
+        // example ["key1", "key2"] => "key1", "key2"
+        options?.key.map((key) => key) || [];
+  const query = useQuery({
+    queryKey: key,
+    queryFn: () =>
       fetchData({
         url: options?.url,
         defaultFilter: options?.filter,
@@ -64,13 +71,12 @@ export default (options?: {
         defaultPageNumber: options?.pageNumber,
         defaultSort: options?.sort,
       }),
-    {
-      onSuccess: options?.onSuccess,
-      // refetchInterval: 2000,
-      retry: 1,
-      onError: options?.onError,
-      enabled: options?.enabled,
-    }
-  );
+    meta: {
+      errorMessage: "An error occurred while fetching data",
+    },
+    refetchOnWindowFocus: options?.refetchOnWindowFocus || false,
+    retry: 1,
+    enabled: options?.enabled,
+  });
   return query;
 };

@@ -13,7 +13,7 @@ interface CreateFamilyModalProps {
 const CreateFamilyModal = (props: CreateFamilyModalProps) => {
   const [form] = Form.useForm();
 
-  const { mutate: createNewFamily } = usePostData({ queriesToInvalidate: ["families"] });
+  const { mutate: createNewFamily } = usePostData({ queriesToInvalidate: ["families"], key: "", url: "" });
   const onFinish = (values: any) => {
     createNewFamily({ url: "/family", formData: values });
     form.resetFields();

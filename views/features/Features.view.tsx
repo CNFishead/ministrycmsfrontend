@@ -1,6 +1,6 @@
 import Container from "@/layout/container/Container.layout";
 import { useUser } from "@/state/auth";
-import { useAllFeatures } from "@/state/features/features";
+// import { useAllFeatures } from "@/state/features/features";
 import { getPrice } from "@/utils/getPrice";
 import { FEATURES } from "@/utils/hasFeature";
 import EditPaymentInfoModal from "@/views/billing/components/editPaymentInfoModal/EditPaymentInfoModal.component";
@@ -8,18 +8,18 @@ import { Button, Empty, message, Skeleton } from "antd";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 
-import Feature from "./components/feature/Feature.component";
+// import Feature from "./components/feature/Feature.component";
 import FeatureModal from "./components/featureModal/FeatureModal.component";
 import styles from "./Features.module.scss";
-import { useBillingData } from "@/state/billing/billing";
+// import { useBillingData } from "@/state/billing/billing";
 import FeatureType from "@/types/FeatureType";
 
 type Props = {};
 
 const FeaturesView = (props: Props) => {
-  const { data: featuresData, isLoading } = useAllFeatures();
+  // const { data: featuresData, isLoading } = useAllFeatures();
   const { data: loggedInData } = useUser();
-  const { data: billingData } = useBillingData();
+  // const { data: billingData } = useBillingData();
 
   const [selectedFeatures, setSelectedFeatures] = React.useState<any[]>([]);
 
@@ -40,13 +40,13 @@ const FeaturesView = (props: Props) => {
         loggedInData.user.features.includes("632b65745ddb31bf9714ef69")
       )
     ) {
-      discountFeatures.push(featuresData?.allFeatures.find((f: any) => f._id === "63457a948c492c0963977ab6"));
+      // discountFeatures.push(featuresData?.allFeatures.find((f: any) => f._id === "63457a948c492c0963977ab6"));
     }
 
     return discountFeatures;
   };
 
-  if (isLoading) return <Skeleton active />;
+  // if (isLoading) return <Skeleton active />;
   return (
     <div className={styles.container}>
       <FeatureModal
@@ -63,7 +63,7 @@ const FeaturesView = (props: Props) => {
         */}
       <Container title="Your Features">
         <div className={styles.features}>
-          {featuresData?.allFeatures
+          {/* {featuresData?.allFeatures
             .filter((f: any) => loggedInData.user.features.includes(f._id))
             .map((feature: FeatureType, index: any) => {
               return (
@@ -75,16 +75,16 @@ const FeaturesView = (props: Props) => {
                   setSelectedFeatures={setSelectedFeatures}
                 />
               );
-            })}
+            })} */}
         </div>
         <div className={styles.price}>
           <h1 className={styles.total}>Your monthly payment:</h1>
           <h1 className={styles.totalPrice}>
             $
-            {getPrice(
+            {/* {getPrice(
               featuresData?.allFeatures.filter((f: any) => loggedInData.user.features.includes(f._id)),
               loggedInData.user
-            )}
+            )} */}
             /Month
           </h1>
           {loggedInData.user.credits > 0 && (
@@ -93,20 +93,20 @@ const FeaturesView = (props: Props) => {
         </div>
       </Container>
       <Container title="Available Features to Add">
-        {featuresData?.availableFeatures.filter((f: any) => !loggedInData.user.features.includes(f._id)).length ===
+        {/* {featuresData?.availableFeatures.filter((f: any) => !loggedInData.user.features.includes(f._id)).length ===
           0 && (
           <Empty
             description={<span>You have all the features available to you.</span>}
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
-        )}
+        )} */}
 
         {/* 
         Find all features that are not in the user's features array
         and map them to the Feature component
         */}
         <div className={styles.features}>
-          {featuresData?.availableFeatures
+          {/* {featuresData?.availableFeatures
             .filter((f: any) => !loggedInData.user.features.includes(f._id))
             .map((feature: FeatureType) => {
               return (
@@ -118,10 +118,10 @@ const FeaturesView = (props: Props) => {
                   isSelected={selectedFeatures.includes(feature)}
                 />
               );
-            })}
-          {addDiscounts().map((feature) => {
+            })} */}
+          {/* {addDiscounts().map((feature) => {
             return <Feature feature={feature} key={feature._id} isDiscount />;
-          })}
+          })} */}
         </div>
         <div className={styles.price}>
           <h1 className={styles.total}>Total:</h1>
@@ -135,12 +135,12 @@ const FeaturesView = (props: Props) => {
 
           <Button
             onClick={() => {
-              if (billingData?.success) {
-                setModalOpen(true);
-              } else {
-                router.push("/billing?paymentInfoOpen=true");
-                message.warning("You must add payment information before adding features.");
-              }
+              // if (billingData?.success) {
+              //   setModalOpen(true);
+              // } else {
+              //   router.push("/billing?paymentInfoOpen=true");
+              //   message.warning("You must add payment information before adding features.");
+              // }
             }}
             type="primary"
             disabled={selectedFeatures.length === 0}

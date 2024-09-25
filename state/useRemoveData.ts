@@ -21,11 +21,12 @@ const deleteData = async (url: string, formData: any) => {
 export default (options: { queriesToInvalidate?: string[]; successMessage?: string; redirectUrl?: string }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  return useMutation((data: { url: string; formData?: any }) => deleteData(data.url, data.formData), {
+  return useMutation({
+    mutationFn: (data: { url: string; formData?: any }) => deleteData(data.url, data.formData),
     onSuccess: (data: any) => {
       message.success(options.successMessage || "Data Removed successfully");
       options.queriesToInvalidate?.forEach((query: string) => {
-        queryClient.invalidateQueries([query]);
+        queryClient.invalidateQueries([query] as any);
       });
       if (options.redirectUrl) {
         router.push(options.redirectUrl);

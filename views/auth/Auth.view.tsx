@@ -1,12 +1,9 @@
 import { getAbsoluteUrl } from "@/utils/getAbsoluteUrl";
 import { Button } from "antd";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 
 import styles from "./Auth.module.scss";
-import { useUser } from "@/state/auth";
-import Loader from "@/components/loader/Loader.component";
 
 type Props = {
   fullUrl?: string;
@@ -14,7 +11,6 @@ type Props = {
 
 const Auth = (props: Props) => {
   const router = useRouter();
-  const { isLoading: userIsLoading } = useUser();
 
   return (
     <div className={styles.wrapper}>
@@ -22,10 +18,11 @@ const Auth = (props: Props) => {
         <div className={styles.header}>
           <div className={styles.logoContainer}>
             <Image
-              src="https://api.shepherdcms.org/images/ShepherdsCMSLogo.png"
+              // src="https://api.shepherdcms.org/images/ShepherdsCMSLogo.png"
+              src="/images/ShepherdsCMSLogo.png"
               width={160}
               height={100}
-              className={styles.logo + " " + styles.truthcastingLogo}
+              className={styles.logo + " " + styles.largeLogo}
               style={{
                 objectFit: "contain",
               }}
@@ -40,20 +37,20 @@ const Auth = (props: Props) => {
             Please click the button below to authenticate and access the dashboard
           </span>
         </p>
-          <a
-            href={`https://auth.shepherdcms.org/?redirect=${getAbsoluteUrl() + router.asPath}`}
-            className={styles.buttonLink}
+        <a
+          href={`https://auth.shepherdcms.org/?redirect=${getAbsoluteUrl() + router.asPath}`}
+          className={styles.buttonLink}
+        >
+          <Button
+            className={styles.button}
+            type="primary"
+            size="large"
+            loading={typeof window === "undefined" || !!window.localStorage.getItem("token")}
+            disabled={typeof window === "undefined" || !!window.localStorage.getItem("token")}
           >
-            <Button
-              className={styles.button}
-              type="primary"
-              size="large"
-              loading={typeof window === "undefined" || !!window.localStorage.getItem("token")}
-              disabled={typeof window === "undefined" || !!window.localStorage.getItem("token")}
-            >
-              Login
-            </Button>
-          </a>
+            Login
+          </Button>
+        </a>
       </div>
       <div className={styles.waveContainer}>
         <svg id="wave" viewBox="0 0 1440 490" version="1.1" xmlns="http://www.w3.org/2000/svg">

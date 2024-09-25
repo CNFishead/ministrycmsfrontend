@@ -3,20 +3,26 @@ import styles from "./NotificationsView.module.scss";
 import Link from "next/link";
 import { Badge, Button, Empty, Skeleton } from "antd";
 import { AiFillDelete, AiFillExclamationCircle } from "react-icons/ai";
-import { useNotifications, useUpdateSelectedNotification } from "@/state/notifications/useNotifications";
 import { FiExternalLink } from "react-icons/fi";
 import Error from "@/components/error/Error.component";
 import { useState } from "react";
 import getNotificationLink from "@/utils/getNotificationLink";
 import NotificationItem from "@/components/notificationItem/NotificationItem.component";
 import NotificationType from "@/types/NotificationType";
+import useFetchData from "@/state/useFetchData";
+import useUpdateData from "@/state/useUpdateData";
 
 type Props = {};
 
 const NotificationsView = (props: Props) => {
-  const { data, isError, isLoading, error, isFetching } = useNotifications();
+  const { data } = useFetchData({
+    url: `/notification`,
+    key: "notifications",
+  });
 
-  const { mutate: updateNotification } = useUpdateSelectedNotification();
+  const { mutate: updateNotification } = useUpdateData({
+    queriesToInvalidate: ["notifications"],
+  });
   return (
     <Container
       title={
@@ -30,7 +36,7 @@ const NotificationsView = (props: Props) => {
           >
             Notifications
           </span>
-          <Button type="primary" onClick={() => updateNotification("")}>
+          <Button type="primary" onClick={() => updateNotification({ url: "" })}>
             Mark all Read
           </Button>
         </div>

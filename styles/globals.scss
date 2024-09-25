@@ -1,3 +1,4 @@
+@import "/node_modules/react-big-calendar/lib/sass/variables.scss";
 // Variables
 // $white: #fff;
 // var(--primary-dark);: #23262a;
@@ -10,6 +11,11 @@
 // var(--primary-light);: #c4cbce;
 
 // var(--primary-dark);-dark-blue: #173c52;
+$event-bg: #f15208; 
+$event-outline: #fc723b;
+$event-color: #db0404;
+$event-border-radius: 5px;
+$today-highlight-bg: #1891ec;
 
 $mobile-width: 768px;
 $tablet-width: 1250px;

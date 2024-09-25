@@ -5,6 +5,7 @@ import User from "@/types/User";
 import { FaSave } from "react-icons/fa";
 import PhotoUpload from "@/components/photoUpload/PhotoUpload.component";
 import Error from "@/components/error/Error.component";
+import { useUser, useUserDetails } from "@/state/auth";
 
 const UserDetails = () => {
   const [form] = Form.useForm();
@@ -15,52 +16,48 @@ const UserDetails = () => {
   //   userUpdate: { loading: updateLoading },
   // } = useSelector((state: RootState) => state.user);
 
-  // const { user: loggedInUser } = useSelector((state: RootState) => state.auth);
+  const { data: loggedInData, error, isLoading: loading } = useUser();
+  const { data: payload } = useUserDetails(loggedInData?.user._id);
 
-  React.useEffect(
-    () => {
-      // if (!user) dispatch(getMe() as any);
-      // otherwise set form values
-      // form.setFieldsValue({ ...user });
-    },
-    [
-      // user
-    ]
-  );
+  React.useEffect(() => {
+    // if (!user) dispatch(getMe() as any);
+    // otherwise set form values
+    form.setFieldsValue({ ...payload?.user });
+  }, [payload?.user]);
 
   const onFinish = (values: any) => {
     console.log(values);
-    // dispatch(
-    //   updateUser({
-    //     ...values,
-    //     profileImageUrl: values.profileImageUrl?.file?.response?.imageUrl || values.profileImageUrl,
-    //   }) as any
-    // );
+    // updateUser({
+    //   ...values,
+    //   profileImageUrl: values.profileImageUrl?.file?.response?.imageUrl || values.profileImageUrl,
+    // }) as any;
   };
 
-  // if (typeof window === "undefined" || loading)
-  // return (
-  //   <Card title="Account Details" className={styles.container}>
-  //     <div className={styles.imageUploadContainer}>
-  //       <div className={styles.imageContainer}>
-  //         <PhotoUpload
-  //           listType="picture-card"
-  //           isAvatar={true}
-  //           action={`${process.env.API_URL}/upload`}
-  //           default={user?.profileImageUrl}
-  //           form={form}
-  //         />
-  //       </div>
-  //     </div>
-  //     <Skeleton active />
-  //   </Card>
-  // );
-  // if (error || !user)
-  //   return (
-  //     <Card title="Account Details" className={styles.container}>
-  //       <Error error={!user ? "No user object found, please try navigating away from the page and back" : error} />
-  //     </Card>
-  //   );
+  if (typeof window === "undefined" || loading)
+    return (
+      <Card title="Account Details" className={styles.container}>
+        <div className={styles.imageUploadContainer}>
+          <div className={styles.imageContainer}>
+            <PhotoUpload
+              listType="picture-card"
+              isAvatar={true}
+              action={`${process.env.API_URL}/upload`}
+              default={payload?.user?.profileImageUrl}
+              form={form}
+            />
+          </div>
+        </div>
+        <Skeleton active />
+      </Card>
+    );
+  if (error || !payload?.user)
+    return (
+      <Card title="Account Details" className={styles.container}>
+        <Error
+          error={!payload?.user ? "No user object found, please try navigating away from the page and back" : error}
+        />
+      </Card>
+    );
   return (
     <Card title="Account Details" className={styles.container}>
       <Form
@@ -77,7 +74,7 @@ const UserDetails = () => {
               isAvatar={true}
               form={form}
               action={`${process.env.API_URL}/upload`}
-              // default={user?.profileImageUrl}
+              default={payload?.user?.profileImageUrl}
               placeholder="Upload a profile photo"
             />
           </div>

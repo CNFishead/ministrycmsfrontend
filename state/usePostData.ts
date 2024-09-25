@@ -1,42 +1,76 @@
-import axios from "@/utils/axios";
-import { message } from "antd";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import errorHandler from "@/utils/errorHandler";
-import { useRouter } from "next/router";
+import axios from '@/utils/axios';
+import { message } from 'antd'; 
+import errorHandler from '@/utils/errorHandler';
+import { useRouter as useNextRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 /**
- * @description Axio call to create or post data to api
+ * @description Axios call to create or post data to API
  * @param formData
  * @returns
- * @todo add types
  */
-const postFormData = async (url: string, formData: any) => {
+const postFormData = async (url: string, formData: any): Promise<any> => {
   const { data } = await axios.post(url, formData);
   return data;
 };
 
-/**
- * @description react-query hook to update a Certificate
- */
-export default (options: {
+interface UsePostOptions {
+  url: string;
+  key: string;
   queriesToInvalidate?: string[];
   successMessage?: string;
   redirectUrl?: string;
-}) => {
-  const router = useRouter();
+  onSuccessCallback?: (data: any) => void;
+  onErrorCallback?: (error: Error) => void;
+}
+
+/**
+ * @description Custom hook to safely use Next.js router on client side
+ */
+const useSafeRouter = () => {
+  const [isMounted, setIsMounted] = useState(false);
+  const router = useNextRouter();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  return isMounted ? router : null;
+};
+
+/**
+ * @description React-query hook to post data to API
+ */
+export default (options: UsePostOptions) => {
   const queryClient = useQueryClient();
-  return useMutation((data: { url: string; formData?: any }) => postFormData(data.url, data.formData), {
+  const router = useSafeRouter();
+
+  return useMutation({
+    mutationFn: (data: any) => postFormData(options.url, data),
     onSuccess: (data: any) => {
-      message.success(options.successMessage || "Data posted successfully");
+      message.success(options.successMessage || 'Data posted successfully');
+
       options.queriesToInvalidate?.forEach((query: string) => {
-        queryClient.invalidateQueries([query]);
+        queryClient.invalidateQueries([query] as any);
       });
-      if (options.redirectUrl) {
+
+      if (options.redirectUrl && router) {
         router.push(options.redirectUrl);
+      }
+      // Call optional onSuccess callback
+      if (options.onSuccessCallback) {
+        options.onSuccessCallback(data);
       }
     },
     onError: (error: Error) => {
+      // Handle the error
       errorHandler(error);
+
+      // Call optional onError callback
+      if (options.onErrorCallback) {
+        options.onErrorCallback(error);
+      }
     },
   });
 };

@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import { Form, Button, Select, Input, Divider, Row, Empty } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import selectableMinistryTypes from "@/data/selectableMinistryTypes";
-import { useSelectedProfile } from "@/state/profile/profile";
 import useFetchData from "@/state/useFetchData";
 import usePostData from "@/state/usePostData";
 import UserItem from "@/components/userItem/UserItem.component";
@@ -21,7 +20,8 @@ const MinistryDetails = () => {
   const queryClient = useQueryClient();
   const [leaderSearch, setLeaderSearch] = React.useState("");
   const selectableOptions = selectableMinistryTypes();
-  const { data: selectedProfile } = useSelectedProfile();
+  const { data: selectedProfile } = queryClient.getQueryData("selectedProfile" as any) as any;
+
   const { setSearch } = useSearchStore();
   const { data: membersListData, isLoading: loading } = useFetchData({
     url: `/member/${selectedProfile?.ministry?._id}`,
@@ -38,6 +38,8 @@ const MinistryDetails = () => {
   const { mutate: createNewMinistry } = usePostData({
     successMessage: "Ministry created successfully",
     queriesToInvalidate: ["ministryList", "ministry", "membersList"],
+    url: `/ministry/${selectedProfile?.ministry?._id}`,
+    key: "ministryCreate",
   });
   const { mutate: updateMinistry } = useUpdateData({
     successMessage: "Ministry updated successfully",
@@ -60,7 +62,7 @@ const MinistryDetails = () => {
 
   React.useEffect(() => {
     if (leaderSearch !== "") setSearch(leaderSearch);
-    queryClient.invalidateQueries(["membersList"]);
+    queryClient.invalidateQueries(["membersList"] as any);
   }, [leaderSearch]);
 
   React.useEffect(() => {

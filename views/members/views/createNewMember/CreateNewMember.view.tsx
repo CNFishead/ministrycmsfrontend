@@ -9,7 +9,6 @@ import { useRouter } from "next/router";
 import useFetchData from "@/state/useFetchData";
 import useUpdateData from "@/state/useUpdateData";
 import usePostData from "@/state/usePostData";
-import { useSelectedProfile } from "@/state/profile/profile";
 import moment from "moment";
 import FamilyType from "@/types/FamilyType";
 import MinistryType from "@/types/Ministry";
@@ -18,7 +17,6 @@ import { set } from "nprogress";
 
 const CreateNewMember = () => {
   const [form] = Form.useForm();
-  console.log(form.getFieldsValue());
   const router = useRouter();
   const { id } = router.query;
   const queryClient = useQueryClient();
@@ -28,7 +26,7 @@ const CreateNewMember = () => {
   const [createFamilyModal, setCreateFamilyModal] = React.useState<boolean>(false);
   const [selectedFamily, setSelectedFamily] = React.useState<FamilyType>();
   const [image, setImage] = React.useState<any>(null); // the image that is uploaded
-  const { data: ministryData, isLoading: loadingMinistry } = useSelectedProfile();
+  const { data: ministryData } = queryClient.getQueryData("selectedProfile" as any) as any;
 
   const { data: memberInformation, isLoading: loading } = useFetchData({
     url: `/member/details/${id}`,
@@ -59,6 +57,8 @@ const CreateNewMember = () => {
   const { mutate: createMember } = usePostData({
     successMessage: "Member created successfully",
     queriesToInvalidate: ["memberInformation"],
+    url: "",
+    key: ""
   });
 
   const onFinish = (values: any) => {

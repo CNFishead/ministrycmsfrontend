@@ -4,18 +4,17 @@ import setAuthToken from "@/utils/setAuthToken";
 import { getAbsoluteUrl } from "@/utils/getAbsoluteUrl";
 import errorHandler from "@/utils/errorHandler";
 import { message } from "antd";
-//make a react query hook to get the user data from the server
+
+// make a react query hook to get the user data from the server
 const fetchUserData = async (token?: string) => {
   const { data } = await axios.post("/auth/me", {
     token: token,
   });
-
   return data;
 };
 
 const updateUser = async (data: any) => {
-  const { data: userData } = await axios.put("/user", data);
-
+  const { data: userData } = await axios.put("/agent", data);
   return userData;
 };
 
@@ -24,22 +23,29 @@ export const useUser = (token?: string, onSuccess?: () => void, onError?: () => 
     token = localStorage.getItem("token") as string;
   }
 
-  const query = useQuery(["user"], () => fetchUserData(token), {
-    onError: (error: Error) => {
-      // if we errored destroy the token, in local storage
-      localStorage.removeItem("token");
-      errorHandler(error);
-    },
+  const query = useQuery({
+    queryKey: ["user"],
+    queryFn: () => fetchUserData(token),
     staleTime: Infinity,
-    cacheTime: Infinity,
-    onSuccess,
+    meta: {
+      errorMessage: "An error occurred while fetching user data",
+    },
+    // cacheTime: Infinity,
     enabled: !!token,
+    // onSuccess: () => {
+    //   if (onSuccess) onSuccess();
+    // },
+    // onError: (error: Error) => {
+    //   console.log(error);
+    //   localStorage.removeItem('token');
+    //   errorHandler(error);
+    //   if (onError) onError();
+    // },
   });
 
-  //save user and token in local storage
+  // save user and token in local storage
   if (query.data && token) {
     localStorage.setItem("token", token);
-    // set the auth token in axios
     setAuthToken(token);
   }
 
@@ -49,7 +55,8 @@ export const useUser = (token?: string, onSuccess?: () => void, onError?: () => 
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation<any, Error, any>((data: any) => updateUser(data), {
+  const mutate = useMutation({
+    mutationFn: (data: any) => updateUser(data),
     onSuccess: (data: any) => {
       message.success("User Updated");
       queryClient.invalidateQueries({ queryKey: ["user"] });
@@ -70,18 +77,23 @@ export const useUpdateUser = () => {
  * @returns
  */
 export const fetchUserDetails = async (id: string) => {
-  const { data } = await axios.get(`/user/${id}`);
-  return data.user;
+  const { data } = await axios.get(`/user/me`);
+  return data;
 };
 
 export const useUserDetails = (id: string) => {
-  const query = useQuery(["userDetails", id], () => fetchUserDetails(id), {
+  const query = useQuery({
+    queryKey: ["userDetails", id],
+    queryFn: () => fetchUserDetails(id),
     staleTime: Infinity,
     enabled: !!id,
-    onError: (error: Error) => {
-      console.log(error);
-      errorHandler(error);
+    meta: {
+      errorMessage: "An error occurred while fetching user details",
     },
+    // onError: (error: Error) => {
+    //   console.log(error);
+    //   errorHandler(error);
+    // },
   });
 
   return query;
@@ -89,5 +101,8 @@ export const useUserDetails = (id: string) => {
 
 export const logout = () => {
   localStorage.removeItem("token");
-  window.location.href = `https://auth.shepherdcms.org?logout=true`;
+  window.location.href =
+    process.env.ENV !== "development"
+      ? `https://auth.pyreprocessing.com?logout=true&redirect=https://merchat.pyreprocessing.com`
+      : `http://localhost:3003?logout=true&redirect=http://${window.location.hostname}:${window.location.port}`;
 };

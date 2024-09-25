@@ -4,13 +4,15 @@ import SearchWrapper from "@/layout/searchWrapper/SearchWrapper.layout";
 import { AiOutlinePlus } from "react-icons/ai";
 import CreateFamilyModal from "./modal/CreateFamilyModal.modal";
 import FamilyType from "@/types/FamilyType";
-import FamilyItem from "@/components/familyItem/FamilyItem.component";
-import { Col, Row } from "antd";
+import { Button, Col, Modal, Row, Table } from "antd";
 import useFetchData from "@/state/useFetchData";
 import Loader from "@/components/loader/Loader.component";
 import Error from "@/components/error/Error.component";
+import { useRouter } from "next/router";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const Families = () => {
+  const router = useRouter();
   const [modalOpen, setModalOpen] = React.useState(false);
   const {
     data: familyList,
@@ -22,6 +24,16 @@ const Families = () => {
     key: "families",
   });
 
+  const handleDelete = (id: string) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this family?",
+      content:
+        "This action cannot be undone, This will not remove members, but it may interfere with member association",
+      onOk: async () => {
+        // await deleteFamily(id);
+      },
+    });
+  };
   if (isLoading) return <Loader />;
   if (isError) return <Error error={error} />;
 
@@ -50,15 +62,38 @@ const Families = () => {
             form.resetFields();
           }}
         />
-        <Row className={styles.contentContainer} justify={"space-evenly"}>
-          {familyList?.families?.map((family: FamilyType) => {
-            return (
-              <Col className={styles.familyCardContainer} span={6} key={family._id}>
-                <FamilyItem family={family} />
-              </Col>
-            );
-          })}
-        </Row>
+        <Table
+          dataSource={familyList?.families}
+          pagination={false}
+          rowKey={(record: FamilyType) => record._id}
+          columns={[
+            {
+              title: "Family Name",
+              dataIndex: "name",
+              key: "name",
+            },
+            {
+              title: "# of Members.",
+              dataIndex: "members",
+              key: "members",
+              render: (text: any[]) => text.length,
+            },
+            {
+              title: "Actions",
+              key: "actions",
+              render: (text, record) => (
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <Button onClick={() => router.push(`/families/${record._id}`)}>
+                    <FaEdit />
+                  </Button>
+                  <Button onClick={() => handleDelete(record._id)}>
+                    <FaTrash style={{ color: "red" }} />
+                  </Button>
+                </div>
+              ),
+            },
+          ]}
+        />
       </SearchWrapper>
     </div>
   );
