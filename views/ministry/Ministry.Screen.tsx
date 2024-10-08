@@ -8,12 +8,10 @@ import { default as MinistryType } from "@/types/Ministry";
 import Link from "next/link";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import useRemoveData from "@/state/useRemoveData";
-import { useRouter } from "next/router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/router"; 
 import { useUser } from "@/state/auth";
 
-const Ministry = () => {
-  const [modalOpen, setModalOpen] = React.useState(false);
+const Ministry = () => { 
   const router = useRouter();
   const { data: loggedInData } = useUser();
   const { data: selectedProfile, isLoading: profileIsLoading } = useFetchData({

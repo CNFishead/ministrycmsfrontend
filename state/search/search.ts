@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export type Search = {
   search: string;
@@ -14,6 +14,7 @@ interface SearchLayout {
   modifySort: (chosenSort: string) => void;
   removeSort: () => void;
   setQueryKey: (queryKey: string) => void;
+  setInclude: (include: string) => void;
 
   search: string;
   numberPages: number;
@@ -22,10 +23,14 @@ interface SearchLayout {
   filter: string;
   sort: string;
   queryKey: string;
+  include: string;
 }
 
 export const useSearchStore = create<SearchLayout>((set) => ({
   // setSearch is a function to set the search
+  setInclude(include: string) {
+    set((state) => ({ ...state, include: include }));
+  },
   setSearch: (search: string) => {
     set((state) => ({ ...state, search: search }));
   },
@@ -46,24 +51,25 @@ export const useSearchStore = create<SearchLayout>((set) => ({
     set((state) => ({ ...state, filter: chosenFilter }));
   },
   removeFilter: () => {
-    set((state) => ({ ...state, filter: '' }));
+    set((state) => ({ ...state, filter: "" }));
   },
 
   modifySort: (chosenSort: string) => {
     set((state) => ({ ...state, sort: chosenSort }));
   },
   removeSort: () => {
-    set((state) => ({ ...state, sort: '' }));
+    set((state) => ({ ...state, sort: "" }));
   },
   setQueryKey: (queryKey: string) => {
     set((state) => ({ ...state, queryKey: queryKey }));
   },
 
-  search: '',
+  include: "",
+  search: "",
   numberPages: 0,
   pageNumber: 1,
   pageLimit: 5,
-  filter: '',
-  sort: '',
-  queryKey: '',
+  filter: "",
+  sort: "",
+  queryKey: "",
 }));

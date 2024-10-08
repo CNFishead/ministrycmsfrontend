@@ -12,6 +12,7 @@ import PhotoUpload from "@/components/photoUpload/PhotoUpload.component";
 import MemberType from "@/types/MemberType";
 import { useSearchStore } from "@/state/search/search";
 import useUpdateData from "@/state/useUpdateData";
+import { useUser } from "@/state/auth";
 
 const MinistryDetails = () => {
   const [form] = Form.useForm();
@@ -20,7 +21,13 @@ const MinistryDetails = () => {
   const queryClient = useQueryClient();
   const [leaderSearch, setLeaderSearch] = React.useState("");
   const selectableOptions = selectableMinistryTypes();
-  const { data: selectedProfile } = queryClient.getQueryData("selectedProfile" as any) as any;
+  const { data: loggedInUser } = useUser();
+
+  const { data: selectedProfile } = useFetchData({
+    url: `/ministry/${loggedInUser.user?.ministry?._id}`,
+    key: "selectedProfile",
+    enabled: !!loggedInUser?.user?.ministry?._id,
+  });
 
   const { setSearch } = useSearchStore();
   const { data: membersListData, isLoading: loading } = useFetchData({

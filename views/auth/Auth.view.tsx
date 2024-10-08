@@ -22,7 +22,6 @@ const Auth = (props: Props) => {
               src="/images/ShepherdsCMSLogo.png"
               width={160}
               height={100}
-              className={styles.logo + " " + styles.largeLogo}
               style={{
                 objectFit: "contain",
               }}
@@ -38,7 +37,11 @@ const Auth = (props: Props) => {
           </span>
         </p>
         <a
-          href={`https://auth.shepherdcms.org/?redirect=${getAbsoluteUrl() + router.asPath}`}
+          href={
+            process.env.ENV !== "development"
+              ? `https://auth.shepherdcms.org/?redirect=${getAbsoluteUrl() + router.asPath}`
+              : `http://localhost:3003?redirect=${getAbsoluteUrl() + router.asPath}`
+          }
           className={styles.buttonLink}
         >
           <Button

@@ -10,18 +10,24 @@ const fetchData = async (options?: {
   defaultPageLimit?: number;
   defaultFilter?: string;
   defaultSort?: string;
+  defaultInclude?: string;
 }) => {
   const keyword = options?.defaultKeyword || store.getState().search;
   const pageNumber = options?.defaultPageNumber || store.getState().pageNumber;
   const pageLimit = options?.defaultPageLimit || store.getState().pageLimit;
-
+  const include = options?.defaultInclude || store.getState().include;
   // if there is a default filter, and a store filter, we need to use both, otherwise we can use the values provided
   const filter = `${options?.defaultFilter}${store.getState().filter ? `,${store.getState().filter}` : ""}`;
   // const filter = options?.defaultFilter || store.getState().filter;
   const sort = options?.defaultSort || store.getState().sort;
 
   const { data } = await axios.get(
-    `${options?.url}?keyword=${keyword}&pageNumber=${pageNumber}&limit=${pageLimit}&filterOptions=${filter}&sortBy=${sort}`
+    `${options?.url}?keyword=${keyword}` +
+      `&pageNumber=${pageNumber}` +
+      `&limit=${pageLimit}` +
+      `&filterOptions=${filter}` +
+      `&sortBy=${sort}` +
+      `&includeOptions=${include}`
   );
   // if the data.payload is a string, attempt to decrypt it
   if (typeof data.payload === "string") {
@@ -51,6 +57,7 @@ export default (options?: {
   pageNumber?: number;
   pageLimit?: number;
   filter?: string;
+  include?: string;
   sort?: string;
   refetchOnWindowFocus?: boolean;
 }) => {
@@ -70,6 +77,7 @@ export default (options?: {
         defaultPageLimit: options?.pageLimit,
         defaultPageNumber: options?.pageNumber,
         defaultSort: options?.sort,
+        defaultInclude: options?.include,
       }),
     meta: {
       errorMessage: "An error occurred while fetching data",

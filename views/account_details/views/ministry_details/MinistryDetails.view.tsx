@@ -18,7 +18,7 @@ const MinistryDetails = () => {
   const { data: loggedInUser } = useUser();
 
   const { data: selectedProfile, isLoading: loading, isError, error } = useFetchData({
-    url: `/ministry/ loggedInData.user?.ministry?._id}`,
+    url: `/ministry/${loggedInUser.user?.ministry?._id}`,
     key: "selectedProfile",
     enabled: !!loggedInUser?.user?.ministry?._id,
   });

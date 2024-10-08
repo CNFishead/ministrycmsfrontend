@@ -17,7 +17,7 @@ const Header = (props: Props) => {
   const toggleSideBar = useLayoutStore((state) => state.toggleSideBar);
   const { data: loggedInData } = useUser();
   const { data: selectedProfile } = useFetchData({
-    url: `/ministry/ loggedInData.user?.ministry?._id}`,
+    url: `/ministry/${loggedInData.user?.ministry?._id}`,
     key: "selectedProfile",
     enabled: !!loggedInData?.user?.ministry?._id,
   });
