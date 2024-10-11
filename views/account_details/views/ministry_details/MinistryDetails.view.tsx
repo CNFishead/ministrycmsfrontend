@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./MinistryDetails.module.scss";
-import { Button, Card, Form, Input, InputNumber, Result, Select, Skeleton } from "antd";
+import { Button, Card, Form, Input, InputNumber, Modal, Result, Select, Skeleton } from "antd";
 import User from "@/types/User";
 import { FaSave } from "react-icons/fa";
 import PhotoUpload from "@/components/photoUpload/PhotoUpload.component";
@@ -9,26 +9,46 @@ import UserItem from "@/components/userItem/UserItem.component";
 import Error from "@/components/error/Error.component";
 import { MdError } from "react-icons/md";
 import selectableMinistryTypes from "@/data/selectableMinistryTypes";
-import { useUser } from "@/state/auth"; 
+import { useUser } from "@/state/auth";
 import useFetchData from "@/state/useFetchData";
+import useUpdateData from "@/state/useUpdateData";
 
 const MinistryDetails = () => {
   const selectableOptions = selectableMinistryTypes();
   const [form] = Form.useForm();
   const { data: loggedInUser } = useUser();
 
-  const { data: selectedProfile, isLoading: loading, isError, error } = useFetchData({
+  const {
+    data: selectedProfile,
+    isLoading: loading,
+    isError,
+    error,
+  } = useFetchData({
     url: `/ministry/${loggedInUser.user?.ministry?._id}`,
     key: "selectedProfile",
     enabled: !!loggedInUser?.user?.ministry?._id,
   });
+
+  const { mutate: updateMinistry } = useUpdateData({
+    queriesToInvalidate: ["selectedProfile"],
+  });
+
+  const onFinish = (values: any) => {
+    Modal.confirm({
+      title: "Update Ministry Details",
+      content: "Are you sure you want to update this ministry?",
+      onOk: () => {
+        updateMinistry({
+          url: `/ministry/${selectedProfile?.ministry?._id}`,
+          formData: values,
+        });
+      },
+      okButtonProps: { type: "primary" },
+    });
+  };
   React.useEffect(() => {
     form.setFieldsValue({ ...selectedProfile?.ministry });
   }, [selectedProfile]);
-
-  const onFinish = (values: any) => {
-    // dispatch(updateMinistry(ministry._id, values, true) as any);
-  };
 
   if (loading)
     return (
@@ -72,6 +92,14 @@ const MinistryDetails = () => {
         </Form.Item>
         <Form.Item name="description" className={styles.inputParent}>
           <Input.TextArea rows={4} className={styles.input} />
+        </Form.Item>
+        <Form.Item name="donationLink" className={styles.inputParent}>
+          <Input
+            type="text"
+            placeholder="https://tithely.com/donation"
+            addonBefore="Donation Link"
+            className={styles.input}
+          />
         </Form.Item>
         <Form.Item name="ministryType" className={styles.inputParent} label="Ministry Type">
           <Select
