@@ -77,14 +77,20 @@ const EventForm = ({ setModalVisible }: EventFormProps) => {
       layout="vertical"
       preserve={false}
       initialValues={{
-        ministry: { label: currentForm?.ministry.name, value: JSON.stringify(currentForm?.ministry) },
+        ministry: currentForm?.ministry
+          ? { label: currentForm?.ministry.name, value: JSON.stringify(currentForm?.ministry) }
+          : undefined,
+        name: "A new event",
+        location: "Church",
+        description: "A new event",
+        dates: [moment().startOf("day"), moment().endOf("day")],
       }}
     >
       <Form.Item name="name" label="Title" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
       <Form.Item
-        name={["ministry"]}
+        name={"ministry"}
         label="Hosting ministry"
         tooltip="Leave this blank if the event is hosted by the church and not a sub ministry"
       >
@@ -155,8 +161,12 @@ const EventForm = ({ setModalVisible }: EventFormProps) => {
                 key="submit"
                 type="primary"
                 onClick={() => {
-                  createEvent(form.getFieldsValue());
-                  setModalVisible(false);
+                  createEvent(form.getFieldsValue(), {
+                    onSuccess(data, variables, context) {
+                      form.resetFields();
+                      setModalVisible(false);
+                    },
+                  });
                 }}
               >
                 Create

@@ -144,7 +144,7 @@ const Events = () => {
         }}
         eventPropGetter={eventPropGetter} // Apply the custom styling
       />
-      <FloatButton.Group trigger="hover">
+      <FloatButton.Group trigger="click" >
         <FloatButton onClick={() => setModalVisible(!modalVisible)} icon={<FaPlus />} tooltip="create new event" />
       </FloatButton.Group>
     </div>

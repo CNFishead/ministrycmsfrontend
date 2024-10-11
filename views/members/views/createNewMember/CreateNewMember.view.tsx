@@ -14,19 +14,24 @@ import FamilyType from "@/types/FamilyType";
 import MinistryType from "@/types/Ministry";
 import { useQueryClient } from "@tanstack/react-query";
 import { set } from "nprogress";
+import { useUser } from "@/state/auth";
 
 const CreateNewMember = () => {
   const [form] = Form.useForm();
   const router = useRouter();
   const { id } = router.query;
-  const queryClient = useQueryClient();
   const [timer, setTimer] = React.useState<any>(null);
   const [familyKeyword, setFamilyKeyword] = React.useState<string>("");
   const [ministryKeyword, setMinistryKeyword] = React.useState<string>("");
   const [createFamilyModal, setCreateFamilyModal] = React.useState<boolean>(false);
   const [selectedFamily, setSelectedFamily] = React.useState<FamilyType>();
   const [image, setImage] = React.useState<any>(null); // the image that is uploaded
-  const { data: ministryData } = queryClient.getQueryData("selectedProfile" as any) as any;
+  const { data: loggedInData } = useUser();
+  const { data: selectedProfile, isLoading: profileIsLoading } = useFetchData({
+    url: `/ministry/${loggedInData.user?.ministry?._id}`,
+    key: "selectedProfile",
+    enabled: !!loggedInData?.user?.ministry?._id,
+  });
 
   const { data: memberInformation, isLoading: loading } = useFetchData({
     url: `/member/details/${id}`,
@@ -34,8 +39,7 @@ const CreateNewMember = () => {
     enabled: !!id,
   });
   const {
-    data: familiesList,
-    isLoading: familiesLoading,
+    data: familiesList, 
     isFetching: familiesFetching,
   } = useFetchData({
     url: `/family`,
@@ -43,9 +47,9 @@ const CreateNewMember = () => {
     keyword: familyKeyword,
   });
   const { data: ministriesList, isLoading: ministriesLoading } = useFetchData({
-    url: `/ministry/${ministryData?.ministry?._id}/subministries`,
+    url: `/ministry/${selectedProfile?.ministry?._id}/subministries`,
     key: "ministryList",
-    enabled: !!ministryData?.ministry?._id,
+    enabled: !!selectedProfile?.ministry?._id,
     keyword: ministryKeyword,
   });
 
@@ -58,7 +62,7 @@ const CreateNewMember = () => {
     successMessage: "Member created successfully",
     queriesToInvalidate: ["memberInformation"],
     url: "",
-    key: ""
+    key: "",
   });
 
   const onFinish = (values: any) => {

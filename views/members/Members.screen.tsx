@@ -8,14 +8,14 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useFetchData from "@/state/useFetchData";
-import useRemoveData from "@/state/useRemoveData"; 
+import useRemoveData from "@/state/useRemoveData";
 import { useUser } from "@/state/auth";
 
 const Members = () => {
   const router = useRouter();
 
   const { data: loggedInData } = useUser();
-  const { data: selectedProfile, isLoading: profileIsLoading } = useFetchData({
+  const { data: selectedProfile } = useFetchData({
     url: `/ministry/${loggedInData.user?.ministry?._id}`,
     key: "selectedProfile",
     enabled: !!loggedInData?.user?.ministry?._id,
@@ -46,6 +46,26 @@ const Members = () => {
               router.push("/members/new");
             },
             type: "primary",
+          },
+        ]}
+        filters={[
+          {
+            label: "All",
+            key: "",
+          },
+          {
+            label: "Staff Only",
+            key: `role;{"$eq":"staff"}`,
+          },
+        ]}
+        sort={[
+          {
+            label: "None",
+            key: "",
+          },
+          {
+            label: "Name (A-Z)",
+            key: "firstName;1",
           },
         ]}
         placeholder="Search Members"
