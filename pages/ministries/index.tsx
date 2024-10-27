@@ -8,7 +8,16 @@ export default function Home() {
   // get the size of the screen using react-responsive useMediaQuery hook
   const isMobile = useMediaQuery({ query: "(max-width: 1024px)" });
   return (
-    <PageLayout pages={[navigation().ministries.links.ministries]} largeSideBar={isMobile}>
+    <PageLayout
+      pages={[navigation().ministries.links.ministries]}
+      largeSideBar={isMobile}
+      meta={{
+        title: "Shepherd | Ministries",
+        description: "Shepherd Ministries",
+        keywords: "Shepherd, Ministries",
+        url: "https://shepherd.com/ministries",
+      }}
+    >
       <Ministry />
     </PageLayout>
   );

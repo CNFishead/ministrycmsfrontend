@@ -5,7 +5,7 @@ const Meta = ({
   title = "Shepherd's CRM",
   description = "Shepherd's CRM is a platform for churches to manage their members, events, and finances. All in one convenient place.",
   keywords = "church, crm, members, events, finances, church management",
-  url = "https://shepherds-crm.vercel.app",
+  url = "https://www.shepherds-crm.com",
   image = "/logo512.png",
 }) => (
   <Head>

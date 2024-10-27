@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import useFetchData from "@/state/useFetchData";
 import useRemoveData from "@/state/useRemoveData";
 import { useUser } from "@/state/auth";
+import useApiHook from "@/state/useApi";
 
 const Members = () => {
   const router = useRouter();
@@ -21,11 +22,13 @@ const Members = () => {
     enabled: !!loggedInData?.user?.ministry?._id,
   });
 
-  const { data: membersListData, isLoading: loading } = useFetchData({
+  const { data: membersListData, isLoading: loading } = useApiHook({
     url: `/member/${selectedProfile?.ministry?._id}`,
     key: "members",
     enabled: !!selectedProfile?.ministry?._id,
-  });
+    method: "GET",
+    filter: `user;${loggedInData.user?._id}`,
+  }) as any;
 
   const { mutate: deleteMember } = useRemoveData({
     queriesToInvalidate: ["members"],
@@ -82,24 +85,23 @@ const Members = () => {
             rowKey={(record: MemberType) => record._id}
             columns={[
               {
-                title: "",
+                title: "Member",
                 dataIndex: "profileImageUrl",
                 key: "profileImageUrl",
                 render: (text: string, record: MemberType) => {
-                  return <Avatar src={text} size={64} />;
+                  return (
+                    <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+                      <Avatar src={text} size={64} /> <span>{record.fullName}</span>
+                    </div>
+                  );
                 },
               },
-              {
-                title: "Name",
-                dataIndex: "fullName",
-                key: "fullName",
-              },
-              {
-                title: "Family",
-                // we want the family name, family is an object containing the family id and name
-                dataIndex: ["family", "name"],
-                key: "family",
-              },
+              // {
+              //   title: "Family",
+              //   // we want the family name, family is an object containing the family id and name
+              //   dataIndex: ["family", "name"],
+              //   key: "family",
+              // },
               {
                 title: "Email",
                 dataIndex: "email",
@@ -152,8 +154,8 @@ const Members = () => {
               },
               {
                 title: "# Ministries part of",
-                dataIndex: "numberOfMinistries",
-                key: "numberOfMinistries",
+                dataIndex: "ministriesMemberOf",
+                key: "ministriesMemberOf",
                 render: (text: any) => {
                   return text?.length;
                 },
@@ -176,6 +178,8 @@ const Members = () => {
                 dataIndex: "birthday",
                 key: "birthday",
                 render: (text: string) => {
+                  // check if exists, if not return n/a
+                  if (!text) return "N/A";
                   return new Date(text).toLocaleDateString();
                 },
               },

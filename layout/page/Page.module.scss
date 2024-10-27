@@ -63,13 +63,13 @@
   .sideBar {
     background: linear-gradient(180deg, var(--primary-dark) 0%, rgba(0, 0, 0, 0.989) 100%);
     height: 100%;
+    z-index: 1000;
     grid-area: sidebar;
     transition: $animation;
     -webkit-transition: $animation;
     width: auto;
     position: fixed;
-    width: 265px;
-    z-index: 4;
+    width: 265px; 
   }
   .content {
     background-color: var(--quaternary-light);

@@ -4,12 +4,13 @@ import SearchWrapper from "@/layout/searchWrapper/SearchWrapper.layout";
 import { AiOutlinePlus } from "react-icons/ai";
 import CreateFamilyModal from "./modal/CreateFamilyModal.modal";
 import FamilyType from "@/types/FamilyType";
-import { Button, Col, Modal, Row, Table } from "antd";
+import { Avatar, Button, Col, Modal, Row, Table } from "antd";
 import useFetchData from "@/state/useFetchData";
 import Loader from "@/components/loader/Loader.component";
 import Error from "@/components/error/Error.component";
 import { useRouter } from "next/router";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import useApiHook from "@/state/useApi";
 
 const Families = () => {
   const router = useRouter();
@@ -24,13 +25,19 @@ const Families = () => {
     key: "families",
   });
 
+  const { mutate: deleteFamily } = useApiHook({
+    method: "DELETE",
+    key: "deleteFamily",
+    queriesToInvalidate: ["families"],
+  }) as any;
+
   const handleDelete = (id: string) => {
     Modal.confirm({
       title: "Are you sure you want to delete this family?",
       content:
         "This action cannot be undone, This will not remove members, but it may interfere with member association",
       onOk: async () => {
-        // await deleteFamily(id);
+        await deleteFamily({ url: `/family/${id}` });
       },
     });
   };
@@ -68,15 +75,30 @@ const Families = () => {
           rowKey={(record: FamilyType) => record._id}
           columns={[
             {
-              title: "Family Name",
+              title: "Family",
               dataIndex: "name",
               key: "name",
+              render: (text, record) => {
+                // return up to 2 avatars from the available members array, and the family name
+                return (
+                  <Row align="middle" gutter={10}>
+                    {record.members.slice(0, 2).map((member) => (
+                      <Col key={member._id}>
+                        <Avatar src={member.profileImageUrl} alt={member.fullName} size={"large"} />
+                      </Col>
+                    ))}
+                    <Col>{text}</Col>
+                  </Row>
+                );
+              },
             },
             {
               title: "# of Members.",
               dataIndex: "members",
               key: "members",
-              render: (text: any[]) => text.length,
+              render: (text, record) => {
+                return text.length;
+              },
             },
             {
               title: "Actions",

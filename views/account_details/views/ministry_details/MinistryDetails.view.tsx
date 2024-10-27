@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./MinistryDetails.module.scss";
-import { Button, Card, Form, Input, InputNumber, Modal, Result, Select, Skeleton } from "antd";
+import { Button, Card, Divider, Form, Input, InputNumber, Modal, Result, Select, Skeleton } from "antd";
 import User from "@/types/User";
 import { FaSave } from "react-icons/fa";
 import PhotoUpload from "@/components/photoUpload/PhotoUpload.component";
@@ -86,6 +86,10 @@ const MinistryDetails = () => {
             />
           </div>
         </div>
+        <Form.Item name="ministryImageUrl">
+          <Input />
+        </Form.Item>
+        <Divider />
         {/* firstName and lastName should be on the same line */}
         <Form.Item name="name" className={styles.inputParent}>
           <Input type="text" placeholder="Ministry Name" addonBefore="Ministry Name" className={styles.input} />

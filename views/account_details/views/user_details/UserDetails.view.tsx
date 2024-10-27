@@ -1,36 +1,34 @@
 import React from "react";
 import styles from "./UserDetails.module.scss";
-import { Button, Card, Form, Input, InputNumber, Skeleton, Typography } from "antd";
+import { Button, Card, Divider, Form, Input, InputNumber, Skeleton, Typography } from "antd";
 import User from "@/types/User";
 import { FaSave } from "react-icons/fa";
 import PhotoUpload from "@/components/photoUpload/PhotoUpload.component";
 import Error from "@/components/error/Error.component";
 import { useUser, useUserDetails } from "@/state/auth";
+import useUpdateData from "@/state/useUpdateData";
 
 const UserDetails = () => {
   const [form] = Form.useForm();
-  // const dispatch = useDispatch();
-
-  // const {
-  //   userDetails: { user, loading, error },
-  //   userUpdate: { loading: updateLoading },
-  // } = useSelector((state: RootState) => state.user);
-
   const { data: loggedInData, error, isLoading: loading } = useUser();
   const { data: payload } = useUserDetails(loggedInData?.user._id);
 
+  const { mutate: updateUser } = useUpdateData({
+    queriesToInvalidate: ["user"],
+  });
+
   React.useEffect(() => {
-    // if (!user) dispatch(getMe() as any);
-    // otherwise set form values
     form.setFieldsValue({ ...payload?.user });
   }, [payload?.user]);
 
   const onFinish = (values: any) => {
-    console.log(values);
-    // updateUser({
-    //   ...values,
-    //   profileImageUrl: values.profileImageUrl?.file?.response?.imageUrl || values.profileImageUrl,
-    // }) as any;
+    updateUser({
+      url: `/user`,
+      formData: {
+        ...values,
+        profileImageUrl: values.profileImageUrl?.file?.response?.imageUrl || values.profileImageUrl,
+      },
+    }) as any;
   };
 
   if (typeof window === "undefined" || loading)
@@ -79,6 +77,10 @@ const UserDetails = () => {
             />
           </div>
         </div>
+        <Form.Item name="profileImageUrl">
+          <Input />
+        </Form.Item>
+        <Divider />
         {/* firstName and lastName should be on the same line */}
         <div className={styles.nameContainer}>
           <Form.Item name="firstName" className={styles.inputParent}>
@@ -117,9 +119,9 @@ const UserDetails = () => {
         <div className={styles.buttonContainer}>
           <Form.Item>
             <Button
-              htmlType="submit"
               type="primary"
               className={styles.button}
+              htmlType="submit"
               // loading={updateLoading}
               icon={<FaSave />}
             >
