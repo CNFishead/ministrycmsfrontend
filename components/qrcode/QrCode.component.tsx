@@ -44,7 +44,7 @@ const QrCode = ({ url, type, colors, options, qrOptions }: QrCodeProps) => {
 
 // defaults for props
 QrCode.defaultProps = {
-  url: "https://austinhoward.dev",
+  url: "https://check.shepherdscms.org",
   type: "svg",
   colors: {
     dark: "#010599FF",

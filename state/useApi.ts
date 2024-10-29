@@ -23,12 +23,12 @@ const fetchData = async (url: string, method: "GET" | "POST" | "PUT" | "DELETE",
 
       response = await axios.get(url, {
         params: {
-          search: defaultKeyword,
+          keyword: defaultKeyword,
           pageNumber: defaultPageNumber,
           pageLimit: defaultPageLimit,
-          filter: defaultFilter,
-          sort: defaultSort,
-          include: defaultInclude,
+          filterOptions: defaultFilter,
+          sortOptions: defaultSort,
+          includeOptions: defaultInclude,
         },
       });
 
@@ -56,6 +56,7 @@ const useApiHook = (options: {
   url?: string;
   key: string | string[];
   filter?: any;
+  keyword?: string;
   sort?: any;
   include?: any;
   queriesToInvalidate?: string[];
@@ -78,6 +79,7 @@ const useApiHook = (options: {
     queriesToInvalidate,
     successMessage,
     redirectUrl,
+    keyword,
     enabled = true,
     refetchOnWindowFocus = false,
     onSuccessCallback,
@@ -91,7 +93,12 @@ const useApiHook = (options: {
     return useQuery({
       queryKey,
       queryFn: () =>
-        fetchData(url!, method, undefined, { defaultFilter: filter, defaultSort: sort, defaultInclude: include }),
+        fetchData(url!, method, undefined, {
+          defaultKeyword: keyword,
+          defaultFilter: filter,
+          defaultSort: sort,
+          defaultInclude: include,
+        }),
       enabled,
       refetchOnWindowFocus,
       retry: 1,
@@ -103,7 +110,7 @@ const useApiHook = (options: {
 
   // For POST, PUT, DELETE requests, use useMutation
   return useMutation({
-    mutationFn: (data: {url?: string, formData?: any}) => fetchData(url ? url : data.url as any, method, data),
+    mutationFn: (data: { url?: string; formData?: any }) => fetchData(url ? url : (data.url as any), method, data),
     onSuccess: (data: any) => {
       if (successMessage) {
         message.success(successMessage);

@@ -11,24 +11,29 @@ import Error from "@/components/error/Error.component";
 import { useRouter } from "next/router";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import useApiHook from "@/state/useApi";
+import { useUser } from "@/state/auth";
 
 const Families = () => {
   const router = useRouter();
   const [modalOpen, setModalOpen] = React.useState(false);
+  const { data: loggedInData } = useUser();
+  const { mutate: deleteFamily } = useApiHook({
+    method: "DELETE",
+    key: "deleteFamily",
+    queriesToInvalidate: ["families"],
+  }) as any;
+
   const {
     data: familyList,
     isLoading,
     isError,
     error,
-  } = useFetchData({
-    url: `/family`,
+  } = useApiHook({
+    url: "/family",
     key: "families",
-  });
-
-  const { mutate: deleteFamily } = useApiHook({
-    method: "DELETE",
-    key: "deleteFamily",
-    queriesToInvalidate: ["families"],
+    method: "GET",
+    filter: `user;${loggedInData?.user._id}`,
+    enabled: !!loggedInData?.user._id,
   }) as any;
 
   const handleDelete = (id: string) => {

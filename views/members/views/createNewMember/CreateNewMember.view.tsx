@@ -15,6 +15,7 @@ import MinistryType from "@/types/Ministry";
 import { useQueryClient } from "@tanstack/react-query";
 import { set } from "nprogress";
 import { useUser } from "@/state/auth";
+import useApiHook from "@/state/useApi";
 
 const CreateNewMember = () => {
   const [form] = Form.useForm();
@@ -38,20 +39,20 @@ const CreateNewMember = () => {
     key: "memberInformation",
     enabled: !!id,
   });
-  const {
-    data: familiesList, 
-    isFetching: familiesFetching,
-  } = useFetchData({
+  const { data: familiesList, isFetching: familiesFetching } = useFetchData({
     url: `/family`,
     key: "familyList",
     keyword: familyKeyword,
+    filter: `user;${loggedInData?.user?._id}`,
   });
-  const { data: ministriesList, isLoading: ministriesLoading } = useFetchData({
+  const { data: ministriesList, isLoading: ministriesLoading } = useApiHook({
     url: `/ministry/${selectedProfile?.ministry?._id}/subministries`,
     key: "ministryList",
     enabled: !!selectedProfile?.ministry?._id,
     keyword: ministryKeyword,
-  });
+    filter: `user;${loggedInData?.user?._id}`,
+    method: "GET",
+  }) as any;
 
   const { mutate: updateMember } = useUpdateData({
     successMessage: "Member updated successfully",
@@ -93,7 +94,7 @@ const CreateNewMember = () => {
         ...memberInformation?.data,
         birthday: moment(memberInformation?.data?.birthday),
         family: { _id: memberInformation?.data?.family?._id, name: memberInformation?.data?.family?.name },
-        ministry: memberInformation?.data?.ministry?.map((ministry: MinistryType) => {
+        ministry: memberInformation?.data?.ministries?.map((ministry: MinistryType) => {
           return { value: ministry._id, label: ministry.name, _id: ministry._id };
         }),
       });
